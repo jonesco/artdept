@@ -41,14 +41,14 @@
     .caps { text-transform: uppercase; letter-spacing: 0.02em; }
 
     /* Header */
-    header { border-bottom: var(--rule); position: sticky; top: 0; background: var(--paper); z-index: 10; }
+    header { border-bottom: var(--rule); position: sticky; top: 0; background: var(--ink); color: var(--paper); z-index: 10; }
     .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 76px; }
     .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .brand img { width: 52px; height: 52px; }
+    .brand img { width: 52px; height: 52px; filter: invert(1); }
     .brand span { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1; }
     nav { display: flex; gap: 28px; }
     nav a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; padding: 4px 0; border-bottom: 3px solid transparent; }
-    nav a:hover { border-bottom-color: var(--ink); }
+    nav a:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
 
     /* Hero */
     .hero { border-bottom: var(--rule); }
