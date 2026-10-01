@@ -122,6 +122,7 @@
     .blurb { margin: 0 0 24px; }
     .product .btn { margin-top: auto; width: 100%; }
     /* Phone-only tabs that switch between the two product cards */
+    .phone-only { display: none; }
     .size-tabs { display: none; grid-template-columns: 1fr 1fr; border: var(--rule); margin-bottom: 8px; }
     .size-tabs button { font: inherit; font-weight: 800; font-size: 15px; text-transform: uppercase;
       padding: 14px 8px; border: 0; background: var(--cream); color: var(--ink); cursor: pointer; }
@@ -156,6 +157,8 @@
     @media (max-width: 860px) {
       .hero .wrap, .products, .about .wrap { grid-template-columns: 1fr; }
       .size-tabs { display: grid; }
+      .desk-only { display: none; }
+      .phone-only { display: inline; }
       .product:not(.active) { display: none; }
       .product h3 { display: none; }  /* the selected tab already names it */
       .hero .wrap { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
@@ -171,6 +174,10 @@
       .dia .lbl2 { display: none; }
       .dia .dimtxt { font-size: 28px; stroke-width: 14px; }
       .dia .pp { font-size: 22px; }
+      .dia.selected .book { fill: var(--magenta); }
+      .dia.selected .safe { stroke: var(--paper); opacity: .8; }
+      .dia.selected .cross { stroke: var(--paper); }
+      .dia.selected .pp { fill: var(--paper); }
     }
     @media (max-width: 560px) {
       .wrap { padding: 0 16px; }
@@ -239,7 +246,7 @@
       <div class="wrap">
         <div class="sec-head">
           <h2>Pick your size</h2>
-          <p>Drawn to scale · Click a book to buy on Amazon</p>
+          <p>Drawn to scale<span class="desk-only"> · Click a book to buy on Amazon</span><span class="phone-only"> · Tap a book to see its details</span></p>
         </div>
         <figure class="schematic" id="schematic" aria-label="Scale drawing of the two book sizes"></figure>
         <div class="size-tabs" role="tablist" id="size-tabs" aria-label="Book size"></div>
@@ -328,9 +335,9 @@
     function selectSize(id) {
       tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.id === id));
       document.querySelectorAll('.product').forEach(el => el.classList.toggle('active', el.id === id));
+      document.querySelectorAll('.dia').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
     }
     tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) selectSize(b.dataset.id); });
-    selectSize(PRODUCTS[0].id);
 
     // Scale drawing of the books, side by side, sitting on a shared baseline
     (function drawSchematic() {
@@ -349,7 +356,7 @@
         const tick = (x1, y1, x2, y2) => `<line class="dim" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
         const sub = (p.price != null ? money(p.price) + ' · ' : '') + 'Buy on Amazon ↗';
         const g = `
-          <a class="dia" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Yōkai Coloring Book, ${esc(p.name).toLowerCase()}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
+          <a class="dia" data-id="${p.id}" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Yōkai Coloring Book, ${esc(p.name).toLowerCase()}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
             <rect x="${x}" y="${by - 80}" width="${L + W + R}" height="${H + 80 + BELOW}" fill="transparent"/>
             <text class="lbl" x="${cx}" y="${by - 50}">${esc(p.label.toUpperCase())}</text>
             <text class="lbl2" x="${cx}" y="${by - 22}">${esc(sub.toUpperCase())}</text>
@@ -375,6 +382,16 @@
       document.getElementById('schematic').innerHTML =
         `<svg viewBox="0 0 ${vbW} ${vbH}" role="group">${groups.join('')}</svg>`;
     })();
+
+    // On phones, tapping a drawn book picks its tab instead of leaving for Amazon
+    const phone = matchMedia('(max-width: 860px)');
+    document.getElementById('schematic').addEventListener('click', e => {
+      const book = e.target.closest('.dia');
+      if (!book || !phone.matches) return;
+      e.preventDefault();
+      selectSize(book.dataset.id);
+    });
+    selectSize(PRODUCTS[0].id);
 
     document.getElementById('yr').textContent = new Date().getFullYear();
   </script>
