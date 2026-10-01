@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jonesco Art Dept. | Yōkai Coloring Book</title>
+  <meta name="description" content="Yōkai Coloring Book, Vol. 1: 30 monsters and spirits of Japanese folklore, drawn by Jonesco Art Dept. Available in full size and travel size.">
+  <meta property="og:title" content="Yōkai Coloring Book | Jonesco Art Dept.">
+  <meta property="og:description" content="30 monsters and spirits of Japanese folklore. Full size and travel size.">
+  <meta property="og:image" content="images/cover-full.jpg">
+  <link rel="icon" href="jad-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #000;
+      --paper: #fff;
+      --cream: #fdf8dc;
+      --magenta: #e4148c;
+      --yellow: #ffe500;
+      --gray: #f2f2f2;
+      --rule: 4px solid var(--ink);
+      --thin: 2px solid var(--ink);
+      --wrap: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Poppins', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; }
+    .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+    .caps { text-transform: uppercase; letter-spacing: 0.02em; }
+
+    /* Header */
+    header { border-bottom: var(--rule); position: sticky; top: 0; background: var(--paper); z-index: 10; }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 76px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand img { width: 52px; height: 52px; }
+    .brand span { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1; }
+    nav { display: flex; gap: 28px; }
+    nav a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; padding: 4px 0; border-bottom: 3px solid transparent; }
+    nav a:hover { border-bottom-color: var(--ink); }
+
+    /* Hero */
+    .hero { border-bottom: var(--rule); }
+    .hero .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
+    .tag { display: inline-block; background: var(--ink); color: var(--yellow); font-weight: 800; font-size: 13px; text-transform: uppercase; padding: 6px 12px; margin-bottom: 20px; }
+    h1 { font-weight: 800; font-size: clamp(48px, 7.4vw, 104px); line-height: 0.92; text-transform: uppercase; margin: 0 0 24px; letter-spacing: -0.01em; }
+    h1 em { font-style: normal; color: var(--magenta); display: block; }
+    .lede { font-size: 19px; max-width: 30em; margin: 0 0 32px; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-art { display: flex; justify-content: center; }
+    .hero-art img { width: 82%; box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 14px 28px rgba(0,0,0,.18), 0 36px 64px rgba(0,0,0,.18); }
+
+    /* Buttons, styled after the Big Cartel add-to-cart block */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 24px;
+      min-height: 64px; padding: 10px 18px;
+      background: var(--ink); color: var(--paper);
+      font-weight: 600; font-size: 15px; text-transform: uppercase; text-decoration: none;
+      border: var(--thin); cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .btn:hover { background: var(--magenta); border-color: var(--magenta); }
+    .btn.ghost { background: var(--paper); color: var(--ink); border-color: var(--ink); }
+    .btn.ghost:hover { background: var(--ink); color: var(--paper); }
+    .btn .plus { font-size: 28px; font-weight: 400; line-height: 1; }
+    .btn .stack { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+    .btn .stack small { font-size: 13px; font-weight: 600; }
+    .btn[aria-disabled="true"] { background: var(--gray); color: #777; border-color: var(--gray); cursor: default; }
+
+    /* Section headings */
+    section { border-bottom: var(--rule); scroll-margin-top: 72px; }
+    .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 48px 0 20px; border-bottom: var(--rule); margin-bottom: 40px; }
+    h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-transform: uppercase; margin: 0; }
+    .sec-head p { margin: 0; font-weight: 600; text-transform: uppercase; font-size: 14px; }
+
+    /* Products */
+    .products { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding-bottom: 56px; }
+    .product { display: flex; flex-direction: column; }
+    /* Scale drawing: one SVG so both books share the same inches-to-pixels scale */
+    .schematic { margin: 0 0 48px; padding: 32px 24px 24px; border: var(--rule);
+      background-color: var(--paper);
+      background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
+      background-size: 20px 20px; }
+    .schematic svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; overflow: visible; }
+    .schematic text { font-family: 'Poppins', system-ui, sans-serif; }
+    .dia { cursor: pointer; }
+    .dia .book { fill: var(--paper); stroke: var(--ink); stroke-width: 4; transition: fill .15s; }
+    .dia .band { fill: var(--ink); }
+    .dia .title { fill: var(--yellow); font-weight: 800; text-anchor: middle; }
+    .dia .safe { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 6 6; opacity: .45; }
+    .dia .cross { stroke: var(--ink); stroke-width: 2; }
+    .dia .pp { font-size: 15px; font-weight: 600; text-anchor: end; }
+    .dia .dim { stroke: var(--ink); stroke-width: 2; }
+    .dia .ext { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 4; }
+    .dia .dimtxt { font-size: 18px; font-weight: 800; text-anchor: middle; dominant-baseline: middle;
+      paint-order: stroke; stroke: var(--paper); stroke-width: 10px; stroke-linejoin: round; }
+    .dia .lbl { font-size: 26px; font-weight: 800; text-anchor: middle; }
+    .dia .lbl2 { font-size: 17px; font-weight: 600; text-anchor: middle; transition: fill .15s; }
+    .dia:hover .book, .dia:focus-visible .book { fill: var(--magenta); }
+    .dia:hover .safe, .dia:focus-visible .safe { stroke: var(--paper); opacity: .8; }
+    .dia:hover .cross, .dia:focus-visible .cross { stroke: var(--paper); }
+    .dia:hover .pp, .dia:focus-visible .pp { fill: var(--paper); }
+    .dia:hover .lbl2, .dia:focus-visible .lbl2 { fill: var(--magenta); text-decoration: underline; }
+    .dia:focus { outline: none; }
+    .dia:focus-visible .book { stroke-width: 8; }
+    .product h3 { font-weight: 800; font-size: 26px; text-transform: uppercase; line-height: 1.1; margin: 24px 0 0; padding-bottom: 14px; border-bottom: var(--rule); }
+    .price { font-weight: 800; font-size: 24px; padding: 10px 0; border-bottom: var(--thin); }
+    .specs { list-style: none; margin: 0 0 20px; padding: 0; }
+    .specs li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: var(--thin); font-size: 15px; }
+    .specs li b { font-weight: 600; text-transform: uppercase; font-size: 13px; padding-top: 2px; }
+    .blurb { margin: 0 0 24px; }
+    .product .btn { margin-top: auto; width: 100%; }
+
+    /* Inside */
+    .inside { background: var(--cream); }
+    .inside .sec-head { border-bottom-color: var(--ink); }
+    .all30 { border: var(--rule); background: var(--cream); margin-bottom: 40px; }
+    .pages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-bottom: 56px; }
+    .page { margin: 0; }
+    .page img { background: var(--paper); border: var(--thin); width: 100%; aspect-ratio: 5 / 8; object-fit: cover; }
+    .page figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 10px; }
+    .page figcaption b { font-weight: 800; text-transform: uppercase; font-size: 15px; }
+    .page figcaption span { font-size: 14px; }
+
+    /* About */
+    /* About + footer read as one black block */
+    .about { background: var(--ink); color: var(--paper); border-bottom: 1px solid #333; }
+    .about img { filter: invert(1); }
+    .about a { text-decoration: none; border-bottom: 3px solid var(--yellow); }
+    .about a:hover { color: var(--yellow); }
+    .about .wrap { display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
+    .about p { font-size: 19px; max-width: 34em; margin: 0 0 12px; }
+
+    /* Footer */
+    footer { background: var(--ink); color: var(--paper); }
+    footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-top: 32px; padding-bottom: 32px; }
+    footer .links { display: flex; gap: 28px; flex-wrap: wrap; }
+    footer a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; }
+    footer a:hover { color: var(--yellow); }
+    footer small { font-size: 13px; }
+
+    @media (max-width: 860px) {
+      .hero .wrap, .products, .about .wrap { grid-template-columns: 1fr; }
+      .hero .wrap { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
+      .hero-art { order: -1; }
+      .pages { grid-template-columns: 1fr 1fr; gap: 20px; }
+      .about .wrap { gap: 24px; }
+      .about img { width: 140px; }
+      .sec-head { flex-direction: column; gap: 8px; padding-top: 36px; }
+      .schematic { padding: 20px 8px 12px; margin-bottom: 32px; }
+      .hero-art img { width: 72%; }
+      /* The drawing shrinks a lot on phones, so enlarge its type; prices are on the cards below */
+      .dia .lbl { font-size: 38px; }
+      .dia .lbl2 { display: none; }
+      .dia .dimtxt { font-size: 28px; stroke-width: 14px; }
+      .dia .pp { font-size: 22px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 0 16px; }
+      .bar { height: 64px; }
+      .brand img { width: 42px; height: 42px; }
+      .brand span { font-size: 15px; }
+      nav { gap: 16px; }
+      nav a.opt { display: none; }
+      .ctas .btn { flex: 1 1 100%; }
+      .page figcaption { flex-direction: column; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#top" aria-label="Jonesco Art Dept. home">
+        <img src="jad-logo.png" alt="">
+        <span>Jonesco<br>Art Dept.</span>
+      </a>
+      <nav>
+        <a class="opt" href="#inside">Inside</a>
+        <a href="#books">Sizes</a>
+        <a href="#books">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="wrap">
+        <div>
+          <div class="tag">New · Vol. 1</div>
+          <h1>Yōkai <em>Coloring Book</em></h1>
+          <p class="lede">30 monsters and spirits of Japanese folklore, hand drawn for you to color. There's a hundred-eyed blob, a ceiling hanger, a hair-cutting bird and more. Comes in full size for the table and travel size for the bag.</p>
+          <div class="ctas">
+            <a class="btn" href="#books"><span>Shop the books</span><span class="plus">+</span></a>
+            <a class="btn ghost" href="#inside"><span>Look inside</span><span class="plus">↓</span></a>
+          </div>
+        </div>
+        <div class="hero-art">
+          <img src="images/cover-full.jpg" width="1082" height="1400" alt="Yōkai Coloring Book Vol. 1 cover: Hyakume, a green many-eyed monster on a hot pink background">
+        </div>
+      </div>
+    </div>
+
+    <section id="inside" class="inside">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>What's inside</h2>
+          <p>Every yōkai, named in English &amp; Japanese</p>
+        </div>
+        <img class="all30" src="images/all-30.jpg" width="1400" height="1400" loading="lazy" alt="All 30 yōkai from the book in a six by five grid of black line drawings">
+        <div class="pages">
+          <figure class="page"><img src="images/page-hyakume.jpg" loading="lazy" alt="Coloring page: Hyakume"><figcaption><b>Hyakume</b><span>ひゃくめ · “One hundred eyes”</span></figcaption></figure>
+          <figure class="page"><img src="images/page-oni.jpg" loading="lazy" alt="Coloring page: Oni"><figcaption><b>Oni</b><span>おに · “Ogre, demon”</span></figcaption></figure>
+          <figure class="page"><img src="images/page-tenjo-kudari.jpg" loading="lazy" alt="Coloring page: Tenjo kudari"><figcaption><b>Tenjo kudari</b><span>てんじょうくだり · “Ceiling hanger”</span></figcaption></figure>
+          <figure class="page"><img src="images/page-kamikiri.jpg" loading="lazy" alt="Coloring page: Kamikiri"><figcaption><b>Kamikiri</b><span>かみきり · “Hair cutter”</span></figcaption></figure>
+          <figure class="page"><img src="images/page-akugyo.jpg" loading="lazy" alt="Coloring page: Akugyo"><figcaption><b>Akugyo</b><span>あくぎょ · “Evil fish”</span></figcaption></figure>
+          <figure class="page"><img src="images/page-betobeto-san.jpg" loading="lazy" alt="Coloring page: Betobeto-san"><figcaption><b>Betobeto-san</b><span>べとべとさん · “Sound of footsteps”</span></figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="books">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Pick your size</h2>
+          <p>Drawn to scale · Click a book to buy on Amazon</p>
+        </div>
+        <figure class="schematic" id="schematic" aria-label="Scale drawing of the two book sizes"></figure>
+        <div class="products" id="products"></div>
+      </div>
+    </section>
+
+    <section class="about">
+      <div class="wrap">
+        <img src="jad-logo.png" width="220" height="225" alt="Jonesco Art Department seal">
+        <div>
+          <h2 style="margin-bottom:16px">Jonesco Art Dept.</h2>
+          <p>The drawing table at Jonesco, where we make coloring books, merch and other things printed in ink.</p>
+          <p><a href="#books"><b>Get the book →</b></a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="https://www.amazon.com/dp/B0BMSKP6JN" target="_blank" rel="noopener">Full size on Amazon</a>
+        <a href="https://www.amazon.com/dp/B0FR2J6TG3" target="_blank" rel="noopener">Travel size on Amazon</a>
+        <a href="https://jonesco.com" target="_blank" rel="noopener">Jonesco.com</a>
+      </div>
+      <small>© <span id="yr">2026</span> Jonesco Art Dept.</small>
+    </div>
+  </footer>
+
+  <script>
+    // ---- Edit products here ----
+    // url: Amazon product link. Leave it empty and the button says "Coming soon".
+    // price: a number like 10, or null to hide the price.
+    const PRODUCTS = [
+      {
+        id: 'full',
+        name: 'Yōkai Coloring Book: Full Size',
+        price: 9.99,
+        url: 'https://www.amazon.com/dp/B0BMSKP6JN',
+        label: 'Full size',
+        trim: [8.5, 11],   // inches, width × height
+        pages: 64,
+        blurb: 'The big one. Plenty of room for markers, colored pencils or paint.',
+        specs: [['Size', '8.5 × 11 in'], ['Pages', '64'], ['Yōkai', '30 to color'], ['Best for', 'Desk, table, framing']]
+      },
+      {
+        id: 'travel',
+        name: 'Yōkai Coloring Book: Travel Size',
+        price: 8.00,
+        url: 'https://www.amazon.com/dp/B0FR2J6TG3',
+        label: 'Travel size',
+        trim: [5, 8],
+        pages: 65,
+        blurb: 'Deluxe mini travel size for on-the-go fun. It fits in a backpack, a glovebox or a carry-on.',
+        specs: [['Size', '5 × 8 in'], ['Pages', '65'], ['Yōkai', '30 to color'], ['Best for', 'Planes, trains, waiting rooms']]
+      }
+    ];
+    // ----------------------------
+
+    const money = n => '$' + n.toFixed(2);
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    document.getElementById('products').innerHTML = PRODUCTS.map(p => {
+      const live = !!p.url;
+      const priceText = p.price != null ? money(p.price) : 'Coming soon';
+      const btn = live
+        ? `<a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">
+             <span class="stack">${p.price != null ? `<small>${money(p.price)}</small>` : ''}<span>Buy on Amazon</span></span><span class="plus">+</span>
+           </a>`
+        : `<span class="btn" aria-disabled="true"><span>Coming soon</span><span class="plus">·</span></span>`;
+      return `
+        <article class="product" id="${p.id}">
+          <h3>${esc(p.name)}</h3>
+          <div class="price">${priceText}</div>
+          <ul class="specs">${p.specs.map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join('')}</ul>
+          <p class="blurb">${esc(p.blurb)}</p>
+          ${btn}
+        </article>`;
+    }).join('');
+
+    // Scale drawing of the books, side by side, sitting on a shared baseline
+    (function drawSchematic() {
+      const S = 40;                       // px per inch in viewBox units
+      const L = 80, R = 40, GAP = 40;     // room for the height dimension, right padding, gap between books
+      const TOP = 90, BELOW = 60;         // label room above the tallest book, width dimension below
+      const tallest = Math.max(...PRODUCTS.map(p => p.trim[1])) * S;
+      const base = TOP + tallest;
+      const fmt = n => String(n).replace(/\.0+$/, '');
+      let x = 0;
+      const groups = PRODUCTS.map(p => {
+        const W = p.trim[0] * S, H = p.trim[1] * S;
+        const bx = x + L, by = base - H, band = H * 0.18;
+        const cx = bx + W / 2, cy = by + band + (H - band) / 2;
+        const hx = bx - 36, wy = base + 34;
+        const tick = (x1, y1, x2, y2) => `<line class="dim" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+        const sub = (p.price != null ? money(p.price) + ' · ' : '') + 'Buy on Amazon ↗';
+        const g = `
+          <a class="dia" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${esc(p.name)}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
+            <rect x="${x}" y="${by - 80}" width="${L + W + R}" height="${H + 80 + BELOW}" fill="transparent"/>
+            <text class="lbl" x="${cx}" y="${by - 50}">${esc(p.label.toUpperCase())}</text>
+            <text class="lbl2" x="${cx}" y="${by - 22}">${esc(sub.toUpperCase())}</text>
+            <rect class="book" x="${bx}" y="${by}" width="${W}" height="${H}"/>
+            <rect class="band" x="${bx}" y="${by}" width="${W}" height="${band}"/>
+            <text class="title" x="${cx}" y="${by + band * 0.72}" font-size="${band * 0.62}">YŌKAI</text>
+            <rect class="safe" x="${bx + 14}" y="${by + band + 14}" width="${W - 28}" height="${H - band - 28}"/>
+            <line class="cross" x1="${cx - 12}" y1="${cy}" x2="${cx + 12}" y2="${cy}"/>
+            <line class="cross" x1="${cx}" y1="${cy - 12}" x2="${cx}" y2="${cy + 12}"/>
+            <text class="pp" x="${bx + W - 22}" y="${base - 22}">${p.pages} PAGES</text>
+            <line class="ext" x1="${hx - 8}" y1="${by}" x2="${bx - 6}" y2="${by}"/>
+            ${tick(hx, by, hx, base)}${tick(hx - 8, by, hx + 8, by)}${tick(hx - 8, base, hx + 8, base)}
+            <text class="dimtxt" transform="translate(${hx} ${by + H / 2}) rotate(-90)">${fmt(p.trim[1])} IN</text>
+            <line class="ext" x1="${bx}" y1="${base + 6}" x2="${bx}" y2="${wy + 8}"/>
+            <line class="ext" x1="${bx + W}" y1="${base + 6}" x2="${bx + W}" y2="${wy + 8}"/>
+            ${tick(bx, wy, bx + W, wy)}${tick(bx, wy - 8, bx, wy + 8)}${tick(bx + W, wy - 8, bx + W, wy + 8)}
+            <text class="dimtxt" x="${cx}" y="${wy}">${fmt(p.trim[0])} IN</text>
+          </a>`;
+        x += L + W + R + GAP;
+        return g;
+      });
+      const vbW = x - GAP, vbH = base + BELOW;
+      document.getElementById('schematic').innerHTML =
+        `<svg viewBox="0 0 ${vbW} ${vbH}" role="group">${groups.join('')}</svg>`;
+    })();
+
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
