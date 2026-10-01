@@ -71,7 +71,7 @@
       transition: background .15s, color .15s;
     }
     .btn:hover { background: var(--magenta); border-color: var(--magenta); }
-    .btn.ghost { background: var(--paper); color: var(--ink); border-color: var(--ink); }
+    .btn.ghost { background: var(--cream); color: var(--ink); border-color: var(--ink); }
     .btn.ghost:hover { background: var(--ink); color: var(--paper); }
     .btn .plus { font-size: 28px; font-weight: 400; line-height: 1; }
     .btn .stack { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
@@ -123,11 +123,12 @@
     .product .btn { margin-top: auto; width: 100%; }
 
     /* Inside */
-    .inside { background: var(--cream); }
-    .all30 { border: var(--rule); background: var(--paper); margin-bottom: 40px; }
+    /* White section, cream "paper": multiply tints the white in the scans cream and leaves the black lines alone */
+    .all30-box { background: var(--cream); border: var(--rule); margin-bottom: 40px; }
+    .all30 { mix-blend-mode: multiply; }
     .pages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-bottom: 56px; }
-    .page { margin: 0; }
-    .page img { background: var(--paper); border: var(--thin); width: 100%; aspect-ratio: 5 / 8; object-fit: cover; }
+    .page { margin: 0; background: var(--cream); border: var(--thin); }
+    .page img { mix-blend-mode: multiply; width: 100%; aspect-ratio: 5 / 8; object-fit: cover; }
 
     /* About */
     /* About + footer read as one black block */
@@ -213,7 +214,7 @@
           <h2>What's inside</h2>
           <p>Every yōkai, named in English &amp; Japanese</p>
         </div>
-        <img class="all30" src="images/all-30.jpg" width="1400" height="1400" loading="lazy" alt="All 30 yōkai from the book in a six by five grid of black line drawings">
+        <div class="all30-box"><img class="all30" src="images/all-30.jpg" width="1400" height="1400" loading="lazy" alt="All 30 yōkai from the book in a six by five grid of black line drawings"></div>
         <div class="pages">
           <figure class="page"><img src="images/page-hyakume.jpg" loading="lazy" alt="Coloring page: Hyakume"></figure>
           <figure class="page"><img src="images/page-oni.jpg" loading="lazy" alt="Coloring page: Oni"></figure>
