@@ -121,6 +121,12 @@
     .specs li b { font-weight: 600; text-transform: uppercase; font-size: 13px; padding-top: 2px; }
     .blurb { margin: 0 0 24px; }
     .product .btn { margin-top: auto; width: 100%; }
+    /* Phone-only tabs that switch between the two product cards */
+    .size-tabs { display: none; grid-template-columns: 1fr 1fr; border: var(--rule); margin-bottom: 8px; }
+    .size-tabs button { font: inherit; font-weight: 800; font-size: 15px; text-transform: uppercase;
+      padding: 14px 8px; border: 0; background: var(--cream); color: var(--ink); cursor: pointer; }
+    .size-tabs button + button { border-left: var(--rule); }
+    .size-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
 
     /* Inside */
     /* White section, cream "paper": multiply tints the white in the scans cream and leaves the black lines alone */
@@ -149,6 +155,9 @@
 
     @media (max-width: 860px) {
       .hero .wrap, .products, .about .wrap { grid-template-columns: 1fr; }
+      .size-tabs { display: grid; }
+      .product:not(.active) { display: none; }
+      .product h3 { display: none; }  /* the selected tab already names it */
       .hero .wrap { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
       .hero-art { order: -1; }
       .pages { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -233,6 +242,7 @@
           <p>Drawn to scale · Click a book to buy on Amazon</p>
         </div>
         <figure class="schematic" id="schematic" aria-label="Scale drawing of the two book sizes"></figure>
+        <div class="size-tabs" role="tablist" id="size-tabs" aria-label="Book size"></div>
         <div class="products" id="products"></div>
       </div>
     </section>
@@ -267,7 +277,7 @@
     const PRODUCTS = [
       {
         id: 'full',
-        name: 'Yōkai Coloring Book: Full Size',
+        name: 'Full size',
         price: 9.99,
         url: 'https://www.amazon.com/dp/B0BMSKP6JN',
         label: 'Full size',
@@ -278,7 +288,7 @@
       },
       {
         id: 'travel',
-        name: 'Yōkai Coloring Book: Travel Size',
+        name: 'Travel size',
         price: 8.00,
         url: 'https://www.amazon.com/dp/B0FR2J6TG3',
         label: 'Travel size',
@@ -302,7 +312,7 @@
            </a>`
         : `<span class="btn" aria-disabled="true"><span>Coming soon</span><span class="plus">·</span></span>`;
       return `
-        <article class="product" id="${p.id}">
+        <article class="product" id="${p.id}" role="tabpanel" aria-label="${esc(p.name)}">
           <h3>${esc(p.name)}</h3>
           <div class="price">${priceText}</div>
           <ul class="specs">${p.specs.map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join('')}</ul>
@@ -310,6 +320,17 @@
           ${btn}
         </article>`;
     }).join('');
+
+    // Tabs (shown on phones only) pick which card is visible
+    const tabs = document.getElementById('size-tabs');
+    tabs.innerHTML = PRODUCTS.map(p =>
+      `<button type="button" role="tab" data-id="${p.id}" aria-controls="${p.id}">${esc(p.name)}</button>`).join('');
+    function selectSize(id) {
+      tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.id === id));
+      document.querySelectorAll('.product').forEach(el => el.classList.toggle('active', el.id === id));
+    }
+    tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) selectSize(b.dataset.id); });
+    selectSize(PRODUCTS[0].id);
 
     // Scale drawing of the books, side by side, sitting on a shared baseline
     (function drawSchematic() {
@@ -328,7 +349,7 @@
         const tick = (x1, y1, x2, y2) => `<line class="dim" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
         const sub = (p.price != null ? money(p.price) + ' · ' : '') + 'Buy on Amazon ↗';
         const g = `
-          <a class="dia" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="${esc(p.name)}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
+          <a class="dia" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Yōkai Coloring Book, ${esc(p.name).toLowerCase()}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
             <rect x="${x}" y="${by - 80}" width="${L + W + R}" height="${H + 80 + BELOW}" fill="transparent"/>
             <text class="lbl" x="${cx}" y="${by - 50}">${esc(p.label.toUpperCase())}</text>
             <text class="lbl2" x="${cx}" y="${by - 22}">${esc(sub.toUpperCase())}</text>
