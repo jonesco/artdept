@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jonesco Art Dept. | Yōkai Coloring Book</title>
+  <meta name="description" content="Yōkai Coloring Book, Vol. 1: 30 monsters and spirits of Japanese folklore, drawn by Jonesco Art Dept. Available in full size and travel size.">
+  <meta property="og:title" content="Yōkai Coloring Book | Jonesco Art Dept.">
+  <meta property="og:description" content="30 monsters and spirits of Japanese folklore. Full size and travel size.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jonescoartdept.com/yokai/">
+  <meta property="og:site_name" content="Jonesco Art Dept.">
+  <meta property="og:image" content="https://jonescoartdept.com/images/cover-full.jpg?v=2">
+  <meta property="og:image:width" content="1071">
+  <meta property="og:image:height" content="1400">
+  <meta property="og:image:alt" content="Yōkai Coloring Book Vol. 1 cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../jad-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="../" aria-label="Jonesco Art Dept. shop">
+        <img src="../jad-logo.png" alt="">
+        <span>Jonesco Art Dept.</span>
+      </a>
+      <nav>
+        <a class="opt" href="#inside">Inside</a>
+        <a href="#books">Sizes</a>
+        <a href="../">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="wrap">
+        <div>
+          <div class="tag">New · Vol. 1</div>
+          <h1>Yōkai <em>Coloring Book</em></h1>
+          <p class="lede">30 monsters and spirits of Japanese folklore, hand drawn for you to color. There's a hundred-eyed blob, a ceiling hanger, a hair-cutting bird and more. Comes in full size for the table and travel size for the bag.</p>
+          <div class="ctas">
+            <a class="btn" href="#books"><span>Shop the books</span><span class="plus">+</span></a>
+            <a class="btn ghost" href="#inside"><span>Look inside</span><span class="plus">↓</span></a>
+          </div>
+        </div>
+        <div class="hero-art">
+          <img src="../images/cover-full.jpg" width="1071" height="1400" alt="Yōkai Coloring Book Vol. 1 cover: Hyakume, a green many-eyed monster on a hot pink background">
+        </div>
+      </div>
+    </div>
+
+    <section id="inside" class="inside">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>What's inside</h2>
+          <p>Every yōkai, named in English &amp; Japanese</p>
+        </div>
+        <div class="all30-box"><img class="all30" src="../images/all-30.jpg" width="1400" height="1400" loading="lazy" alt="All 30 yōkai from the book in a six by five grid of black line drawings"></div>
+        <div class="pages">
+          <figure class="page"><img src="../images/page-hyakume.jpg" loading="lazy" alt="Coloring page: Hyakume"></figure>
+          <figure class="page"><img src="../images/page-oni.jpg" loading="lazy" alt="Coloring page: Oni"></figure>
+          <figure class="page"><img src="../images/page-tenjo-kudari.jpg" loading="lazy" alt="Coloring page: Tenjo kudari"></figure>
+          <figure class="page"><img src="../images/page-kamikiri.jpg" loading="lazy" alt="Coloring page: Kamikiri"></figure>
+          <figure class="page"><img src="../images/page-akugyo.jpg" loading="lazy" alt="Coloring page: Akugyo"></figure>
+          <figure class="page"><img src="../images/page-betobeto-san.jpg" loading="lazy" alt="Coloring page: Betobeto-san"></figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="books">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Pick your size</h2>
+          <p>Drawn to scale<span class="desk-only"> · Click a book to buy on Amazon</span><span class="phone-only"> · Tap a book to see its details</span></p>
+        </div>
+        <figure class="schematic" id="schematic" aria-label="Scale drawing of the two book sizes"></figure>
+        <div class="products" id="products"></div>
+      </div>
+    </section>
+
+    <section class="about">
+      <div class="wrap">
+        <img src="../jad-logo.png" width="220" height="225" alt="Jonesco Art Department seal">
+        <div>
+          <h2 style="margin-bottom:16px">Jonesco Art Dept.</h2>
+          <p>The drawing table at Jonesco, where we make coloring books, merch and other things printed in ink.</p>
+          <p><a href="#books"><b>Get the book →</b></a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="https://www.amazon.com/dp/B0BMSKP6JN" target="_blank" rel="noopener">Full size on Amazon</a>
+        <a href="https://www.amazon.com/dp/B0FR2J6TG3" target="_blank" rel="noopener">Travel size on Amazon</a>
+        <a href="https://jonesco.com" target="_blank" rel="noopener">Jonesco.com</a>
+      </div>
+      <small>© <span id="yr">2026</span> Jonesco Art Dept.</small>
+    </div>
+  </footer>
+
+  <script>
+    // ---- Edit products here ----
+    // url: Amazon product link. Leave it empty and the button says "Coming soon".
+    // price: a number like 10, or null to hide the price.
+    const PRODUCTS = [
+      {
+        id: 'full',
+        name: 'Full size',
+        price: 9.99,
+        url: 'https://www.amazon.com/dp/B0BMSKP6JN',
+        label: 'Full size',
+        trim: [8.5, 11],   // inches, width × height
+        pages: 64,
+        blurb: 'The big one. Plenty of room for markers, colored pencils or paint.',
+        specs: [['Size', '8.5 × 11 in'], ['Pages', '64'], ['Yōkai', '30 to color'], ['Best for', 'Desk, table, framing']]
+      },
+      {
+        id: 'travel',
+        name: 'Travel size',
+        price: 7.99,
+        url: 'https://www.amazon.com/dp/B0FR2J6TG3',
+        label: 'Travel size',
+        trim: [5, 8],
+        pages: 64,
+        blurb: 'Deluxe mini travel size for on-the-go fun. It fits in a backpack, a glovebox or a carry-on.',
+        specs: [['Size', '5 × 8 in'], ['Pages', '64'], ['Yōkai', '30 to color'], ['Best for', 'Planes, trains, waiting rooms']]
+      }
+    ];
+    // ----------------------------
+
+    const money = n => '$' + n.toFixed(2);
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    document.getElementById('products').innerHTML = PRODUCTS.map(p => {
+      const live = !!p.url;
+      const priceText = p.price != null ? money(p.price) : 'Coming soon';
+      const btn = live
+        ? `<a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">
+             <span class="stack">${p.price != null ? `<small>${money(p.price)}</small>` : ''}<span>Buy on Amazon</span></span><span class="plus">+</span>
+           </a>`
+        : `<span class="btn" aria-disabled="true"><span>Coming soon</span><span class="plus">·</span></span>`;
+      return `
+        <article class="product" id="${p.id}">
+          <h3>${esc(p.name)}</h3>
+          <div class="price">${priceText}</div>
+          <ul class="specs">${p.specs.map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join('')}</ul>
+          <p class="blurb">${esc(p.blurb)}</p>
+          ${btn}
+        </article>`;
+    }).join('');
+
+    // On phones only one card shows at a time; tapping a book in the drawing picks it
+    function selectSize(id) {
+      document.querySelectorAll('.product').forEach(el => el.classList.toggle('active', el.id === id));
+      document.querySelectorAll('.dia').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+    }
+
+    // Scale drawing of the books, side by side, sitting on a shared baseline
+    (function drawSchematic() {
+      const S = 40;                       // px per inch in viewBox units
+      const L = 80, R = 40, GAP = 40;     // room for the height dimension, right padding, gap between books
+      const TOP = 90, BELOW = 60;         // label room above the tallest book, width dimension below
+      const tallest = Math.max(...PRODUCTS.map(p => p.trim[1])) * S;
+      const base = TOP + tallest;
+      const fmt = n => String(n).replace(/\.0+$/, '');
+      let x = 0;
+      const groups = PRODUCTS.map(p => {
+        const W = p.trim[0] * S, H = p.trim[1] * S;
+        const bx = x + L, by = base - H, band = H * 0.18;
+        const cx = bx + W / 2, cy = by + band + (H - band) / 2;
+        const hx = bx - 36, wy = base + 34;
+        const tick = (x1, y1, x2, y2) => `<line class="dim" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+        const sub = (p.price != null ? money(p.price) + ' · ' : '') + 'Buy on Amazon ↗';
+        const g = `
+          <a class="dia" data-id="${p.id}" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Yōkai Coloring Book, ${esc(p.name).toLowerCase()}, ${fmt(p.trim[0])} by ${fmt(p.trim[1])} inches: buy on Amazon (opens in a new window)">
+            <rect x="${x}" y="${by - 80}" width="${L + W + R}" height="${H + 80 + BELOW}" fill="transparent"/>
+            <text class="lbl" x="${cx}" y="${by - 50}">${esc(p.label.toUpperCase())}</text>
+            <text class="lbl2" x="${cx}" y="${by - 22}">${esc(sub.toUpperCase())}</text>
+            <rect class="book" x="${bx}" y="${by}" width="${W}" height="${H}"/>
+            <rect class="band" x="${bx}" y="${by}" width="${W}" height="${band}"/>
+            <text class="title" x="${cx}" y="${by + band * 0.72}" font-size="${band * 0.62}">YŌKAI</text>
+            <rect class="safe" x="${bx + 14}" y="${by + band + 14}" width="${W - 28}" height="${H - band - 28}"/>
+            <line class="cross" x1="${cx - 12}" y1="${cy}" x2="${cx + 12}" y2="${cy}"/>
+            <line class="cross" x1="${cx}" y1="${cy - 12}" x2="${cx}" y2="${cy + 12}"/>
+            <text class="pp" x="${bx + W - 22}" y="${base - 22}">${p.pages} PAGES</text>
+            <line class="ext" x1="${hx - 8}" y1="${by}" x2="${bx - 6}" y2="${by}"/>
+            ${tick(hx, by, hx, base)}${tick(hx - 8, by, hx + 8, by)}${tick(hx - 8, base, hx + 8, base)}
+            <text class="dimtxt" transform="translate(${hx} ${by + H / 2}) rotate(-90)">${fmt(p.trim[1])} IN</text>
+            <line class="ext" x1="${bx}" y1="${base + 6}" x2="${bx}" y2="${wy + 8}"/>
+            <line class="ext" x1="${bx + W}" y1="${base + 6}" x2="${bx + W}" y2="${wy + 8}"/>
+            ${tick(bx, wy, bx + W, wy)}${tick(bx, wy - 8, bx, wy + 8)}${tick(bx + W, wy - 8, bx + W, wy + 8)}
+            <text class="dimtxt" x="${cx}" y="${wy}">${fmt(p.trim[0])} IN</text>
+          </a>`;
+        x += L + W + R + GAP;
+        return g;
+      });
+      const vbW = x - GAP, vbH = base + BELOW;
+      document.getElementById('schematic').innerHTML =
+        `<svg viewBox="0 0 ${vbW} ${vbH}" role="group">${groups.join('')}</svg>`;
+    })();
+
+    // On phones, tapping a drawn book shows its card instead of leaving for Amazon
+    const phone = matchMedia('(max-width: 860px)');
+    document.getElementById('schematic').addEventListener('click', e => {
+      const book = e.target.closest('.dia');
+      if (!book || !phone.matches) return;
+      e.preventDefault();
+      selectSize(book.dataset.id);
+    });
+    selectSize(PRODUCTS[0].id);
+
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

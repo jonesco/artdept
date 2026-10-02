@@ -1,0 +1,168 @@
+/* Shared styles for every page on jonescoartdept.com */
+:root {
+  --ink: #000;
+  --paper: #fff;
+  --cream: #fdf8dc;
+  --magenta: #e4148c;
+  --yellow: #ffe500;
+  --gray: #f2f2f2;
+  --rule: 4px solid var(--ink);
+  --thin: 2px solid var(--ink);
+  --wrap: 1200px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+.caps { text-transform: uppercase; letter-spacing: 0.02em; }
+
+/* Header */
+header { border-bottom: var(--rule); position: sticky; top: 0; background: var(--ink); color: var(--paper); z-index: 10; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 76px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand img { width: 52px; height: 52px; filter: invert(1); }
+.brand span { font-weight: 800; font-size: 26px; text-transform: uppercase; line-height: 1; white-space: nowrap; }
+nav { display: flex; gap: 28px; }
+nav a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; padding: 4px 0; border-bottom: 3px solid transparent; }
+nav a:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
+
+/* Hero */
+.hero { border-bottom: var(--rule); }
+.hero .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
+.tag { display: inline-block; background: var(--ink); color: var(--yellow); font-weight: 800; font-size: 13px; text-transform: uppercase; padding: 6px 12px; margin-bottom: 20px; }
+h1 { font-weight: 800; font-size: clamp(48px, 7.4vw, 104px); line-height: 0.92; text-transform: uppercase; margin: 0 0 24px; letter-spacing: -0.01em; }
+h1 em { font-style: normal; color: var(--magenta); display: block; }
+.lede { font-size: 19px; max-width: 30em; margin: 0 0 32px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-art { display: flex; justify-content: center; }
+.hero-art img { width: 82%; box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 14px 28px rgba(0,0,0,.18), 0 36px 64px rgba(0,0,0,.18); }
+
+/* Buttons, styled after the Big Cartel add-to-cart block */
+.btn {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 24px;
+  min-height: 64px; padding: 10px 18px;
+  background: var(--ink); color: var(--paper);
+  font-weight: 600; font-size: 15px; text-transform: uppercase; text-decoration: none;
+  border: var(--thin); cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.btn:hover { background: var(--magenta); border-color: var(--magenta); }
+.btn.ghost { background: var(--cream); color: var(--ink); border-color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: var(--paper); }
+.btn .plus { font-size: 28px; font-weight: 400; line-height: 1; }
+.btn .stack { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+.btn .stack small { font-size: 13px; font-weight: 600; }
+.btn[aria-disabled="true"] { background: var(--gray); color: #777; border-color: var(--gray); cursor: default; }
+
+/* Section headings */
+section { border-bottom: var(--rule); scroll-margin-top: 72px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 48px 0 0; margin-bottom: 40px; }
+h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-transform: uppercase; margin: 0; }
+.sec-head p { margin: 0; font-weight: 600; text-transform: uppercase; font-size: 14px; }
+
+/* Products */
+.products { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding-bottom: 56px; }
+.product { display: flex; flex-direction: column; }
+/* Scale drawing: one SVG so both books share the same inches-to-pixels scale */
+.schematic { margin: 0 0 48px; padding: 32px 24px 24px; border: var(--rule);
+  background-color: var(--paper);
+  background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
+  background-size: 20px 20px; }
+.schematic svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; overflow: visible; }
+.schematic text { font-family: 'Poppins', system-ui, sans-serif; }
+.dia { cursor: pointer; }
+.dia .book { fill: var(--cream); stroke: var(--ink); stroke-width: 4; transition: fill .15s; }
+.dia .band { fill: var(--ink); }
+.dia .title { fill: var(--yellow); font-weight: 800; text-anchor: middle; }
+.dia .safe { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 6 6; opacity: .45; }
+.dia .cross { stroke: var(--ink); stroke-width: 2; }
+.dia .pp { font-size: 15px; font-weight: 600; text-anchor: end; }
+.dia .dim { stroke: var(--ink); stroke-width: 2; }
+.dia .ext { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 4; }
+.dia .dimtxt { font-size: 18px; font-weight: 800; text-anchor: middle; dominant-baseline: middle;
+  paint-order: stroke; stroke: var(--paper); stroke-width: 10px; stroke-linejoin: round; }
+.dia .lbl { font-size: 26px; font-weight: 800; text-anchor: middle; }
+.dia .lbl2 { font-size: 17px; font-weight: 600; text-anchor: middle; transition: fill .15s; }
+.dia:hover .book, .dia:focus-visible .book { fill: var(--magenta); }
+.dia:hover .safe, .dia:focus-visible .safe { stroke: var(--paper); opacity: .8; }
+.dia:hover .cross, .dia:focus-visible .cross { stroke: var(--paper); }
+.dia:hover .pp, .dia:focus-visible .pp { fill: var(--paper); }
+.dia:hover .lbl2, .dia:focus-visible .lbl2 { fill: var(--magenta); text-decoration: underline; }
+.dia:focus { outline: none; }
+.dia:focus-visible .book { stroke-width: 8; }
+.product h3 { font-weight: 800; font-size: 26px; text-transform: uppercase; line-height: 1.1; margin: 24px 0 0; padding-bottom: 14px; border-bottom: var(--rule); }
+.price { font-weight: 800; font-size: 24px; padding: 10px 0; border-bottom: var(--thin); }
+.specs { list-style: none; margin: 0 0 20px; padding: 0; }
+.specs li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: var(--thin); font-size: 15px; }
+.specs li b { font-weight: 600; text-transform: uppercase; font-size: 13px; padding-top: 2px; }
+.blurb { margin: 0 0 24px; }
+.product .btn { margin-top: auto; width: 100%; }
+.phone-only { display: none; }
+
+/* Inside */
+/* White section, cream "paper": multiply tints the white in the scans cream and leaves the black lines alone */
+.all30-box { background: var(--cream); border: var(--rule); margin-bottom: 40px; }
+.all30 { mix-blend-mode: multiply; }
+.pages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-bottom: 56px; }
+.page { margin: 0; background: var(--cream); border: var(--rule); }
+.page img { mix-blend-mode: multiply; width: 100%; aspect-ratio: 5 / 8; object-fit: cover; }
+
+/* About */
+/* About + footer read as one black block */
+.about { background: var(--ink); color: var(--paper); border-bottom: 1px solid #333; }
+.about img { filter: invert(1); }
+.about a { text-decoration: none; border-bottom: 3px solid var(--yellow); }
+.about a:hover { color: var(--yellow); }
+.about .wrap { display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
+.about p { font-size: 19px; max-width: 34em; margin: 0 0 12px; }
+
+/* Footer */
+footer { background: var(--ink); color: var(--paper); }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-top: 32px; padding-bottom: 32px; }
+footer .links { display: flex; gap: 28px; flex-wrap: wrap; }
+footer a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; }
+footer a:hover { color: var(--yellow); }
+footer small { font-size: 13px; }
+
+@media (max-width: 860px) {
+  .hero .wrap, .products, .about .wrap { grid-template-columns: 1fr; }
+  .desk-only { display: none; }
+  .phone-only { display: inline; }
+  .product:not(.active) { display: none; }
+  .hero .wrap { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
+  .hero-art { order: -1; }
+  .pages { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .about .wrap { gap: 24px; }
+  .about img { width: 140px; }
+  .sec-head { flex-direction: column; gap: 8px; padding-top: 36px; }
+  .schematic { padding: 20px 8px 12px; margin-bottom: 32px; }
+  .hero-art img { width: 72%; }
+  /* The drawing shrinks a lot on phones, so enlarge its type; prices are on the cards below */
+  .dia .lbl { font-size: 38px; }
+  .dia .lbl2 { display: none; }
+  .dia .dimtxt { font-size: 28px; stroke-width: 14px; }
+  .dia .pp { font-size: 22px; }
+  .dia.selected .book { fill: var(--magenta); }
+  .dia.selected .safe { stroke: var(--paper); opacity: .8; }
+  .dia.selected .cross { stroke: var(--paper); }
+  .dia.selected .pp { fill: var(--paper); }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 0 16px; }
+  .bar { height: 64px; }
+  .brand img { width: 42px; height: 42px; }
+  .brand span { font-size: 17px; }
+  nav { gap: 16px; }
+  nav a.opt { display: none; }
+  .ctas .btn { flex: 1 1 100%; }
+}
