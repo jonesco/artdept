@@ -1,6 +1,10 @@
 /* Trade Gothic: Bold Condensed No. 20 (headlines, wordmark) and Bold No. 2 (labels). Trimmed WOFF2 in /fonts. */
-@font-face { font-family: 'Trade Gothic Bold Cond 20'; src: url('../fonts/TradeGothic-BoldCondTwenty.woff2') format('woff2'); font-weight: 700; font-display: swap; }
-@font-face { font-family: 'Trade Gothic Bold 2'; src: url('../fonts/TradeGothic-BoldTwo.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+/* The fonts' built-in metrics leave more room below the baseline than above the caps, so all-caps text sat high.
+   These overrides split the same total height evenly around the cap height (722), centering caps in their boxes. */
+@font-face { font-family: 'Trade Gothic Bold Cond 20'; src: url('../fonts/TradeGothic-BoldCondTwenty.woff2') format('woff2'); font-weight: 700; font-display: swap;
+  ascent-override: 88.4%; descent-override: 16.2%; line-gap-override: 0%; }
+@font-face { font-family: 'Trade Gothic Bold 2'; src: url('../fonts/TradeGothic-BoldTwo.woff2') format('woff2'); font-weight: 700; font-display: swap;
+  ascent-override: 87.6%; descent-override: 15.4%; line-gap-override: 0%; }
 
 /* Shared styles for every page on jonescoartdept.com */
 :root {
