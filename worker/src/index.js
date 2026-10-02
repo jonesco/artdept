@@ -13,7 +13,7 @@ import Stripe from 'stripe';
 const CATALOG = {
   mug: {
     price: 'price_1ULw8tDmnNZSgsUY53p0yZRD',  // Stripe sandbox price, $18.00
-    printfulSyncVariantId: null,               // TODO: fill in from the Printful API store
+    printfulSyncVariantId: 5529832854,         // Printful "Black Glossy Mug / 11 oz"
     maxQuantity: 10,
     returnPath: '/mug/'
   }

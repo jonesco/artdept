@@ -5,5 +5,5 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 SITE_URL = "https://jonescoartdept.com"
-PRINTFUL_STORE_ID = ""       # TODO: ID of the Printful "Manual order / API" store
+PRINTFUL_STORE_ID = "18842835"   # Printful "Jonesco Art Dept." API store
 PRINTFUL_CONFIRM = "false"   # "true" sends paid orders straight to production
