@@ -7,4 +7,4 @@ compatibility_flags = ["nodejs_compat"]
 SITE_URL = "https://jonescoartdept.com"
 PRINTFUL_STORE_ID = "18842835"   # Printful "Jonesco Art Dept." API store
 PRINTFUL_CONFIRM = "false"   # "true" sends paid orders straight to production
-STRIPE_PRICE_MUG = "price_1ULw8tDmnNZSgsUY53p0yZRD"   # sandbox $18.00; swap for the live price ID at launch
+STRIPE_PRICE_MUG = "price_1UM5CERn4Kp8keIR0tQqVF54"   # live $18.00 (sandbox was price_1ULw8tDmnNZSgsUY53p0yZRD)
