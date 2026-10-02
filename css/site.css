@@ -197,3 +197,6 @@ h2 { font-size: clamp(36px, 4.8vw, 58px); letter-spacing: -.01em; }
 
 /* Room for the macron in YŌKAI under the tight headline leading */
 .hero .tag { margin-bottom: 30px; }
+
+/* Text selection: yellow highlight, black text (same as wesjones.info) */
+::selection { background: var(--yellow); color: var(--ink); }
