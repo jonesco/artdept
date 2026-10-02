@@ -22,7 +22,7 @@ const CATALOG = {
 const SHIPPING = {
   display_name: 'Standard shipping (US)',
   type: 'fixed_amount',
-  fixed_amount: { amount: 595, currency: 'usd' },
+  fixed_amount: { amount: 695, currency: 'usd' },
   delivery_estimate: {
     minimum: { unit: 'business_day', value: 5 },
     maximum: { unit: 'business_day', value: 10 }
