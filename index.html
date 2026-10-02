@@ -23,8 +23,8 @@
   <link rel="stylesheet" href="css/site.css">
   <style>
     .shop-head .wrap { padding-top: 56px; padding-bottom: 8px; }
-    .shop-head h1 { margin-bottom: 12px; }
-    .shop-head p { font-size: 19px; margin: 0; max-width: 32em; }
+    /* One headline sentence in place of a "Shop" title plus description */
+    .shop-head h1 { font-size: clamp(40px, 5.6vw, 76px); line-height: .95; max-width: 15em; margin: 0; }
 
     .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; padding: 40px 0 64px; }
     .tile { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
@@ -68,8 +68,7 @@
   <main>
     <div class="shop-head">
       <div class="wrap">
-        <h1>Shop</h1>
-        <p>Coloring books, mugs and other things made by Jonesco Art Dept.</p>
+        <h1>Monsters, mugs and other things, drawn by hand.</h1>
       </div>
     </div>
 
