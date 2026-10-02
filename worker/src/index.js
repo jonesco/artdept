@@ -4,20 +4,21 @@
 // POST /webhook   Stripe event → once an order is paid, creates the matching order in Printful
 //
 // Secrets (wrangler secret put …): STRIPE_KEY, STRIPE_WEBHOOK_SECRET, PRINTFUL_TOKEN
-// Vars (wrangler.toml): SITE_URL, PRINTFUL_STORE_ID, PRINTFUL_CONFIRM
+// Vars (wrangler.toml): SITE_URL, PRINTFUL_STORE_ID, PRINTFUL_CONFIRM, STRIPE_PRICE_MUG
 
 import Stripe from 'stripe';
 
 // What the site sells through Stripe. The browser only sends the key ("mug");
 // prices and Printful variants live here so they can't be changed client-side.
-const CATALOG = {
+// Stripe price IDs differ between sandbox and live, so they come from wrangler.toml vars.
+const catalog = env => ({
   mug: {
-    price: 'price_1ULw8tDmnNZSgsUY53p0yZRD',  // Stripe sandbox price, $18.00
+    price: env.STRIPE_PRICE_MUG,
     printfulSyncVariantId: 5529832854,         // Printful "Black Glossy Mug / 11 oz"
     maxQuantity: 10,
     returnPath: '/mug/'
   }
-};
+});
 
 const SHIPPING = {
   display_name: 'Standard shipping (US)',
@@ -47,7 +48,7 @@ const stripeClient = env => new Stripe(env.STRIPE_KEY.trim(), { httpClient: Stri
 async function checkout(request, env) {
   const form = await request.formData();
   const key = String(form.get('item') || '');
-  const item = CATALOG[key];
+  const item = catalog(env)[key];
   if (!item) return new Response('Unknown item', { status: 400 });
 
   const stripe = stripeClient(env);
@@ -107,7 +108,7 @@ async function createPrintfulOrder(session, env) {
   const ship = session.collected_information?.shipping_details || session.shipping_details;
   if (!ship?.address) throw new Error('No shipping address on session');
 
-  const priceToItem = Object.fromEntries(Object.values(CATALOG).map(i => [i.price, i]));
+  const priceToItem = Object.fromEntries(Object.values(catalog(env)).map(i => [i.price, i]));
   const items = session.line_items.data.map(li => {
     const item = priceToItem[li.price.id];
     if (!item?.printfulSyncVariantId) throw new Error(`No Printful variant for price ${li.price.id}`);
