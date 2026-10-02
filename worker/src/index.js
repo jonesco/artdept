@@ -41,7 +41,8 @@ export default {
   }
 };
 
-const stripeClient = env => new Stripe(env.STRIPE_KEY, { httpClient: Stripe.createFetchHttpClient() });
+// Secrets piped in from a shell can carry a trailing newline, so trim them
+const stripeClient = env => new Stripe(env.STRIPE_KEY.trim(), { httpClient: Stripe.createFetchHttpClient() });
 
 async function checkout(request, env) {
   const form = await request.formData();
@@ -77,7 +78,7 @@ async function webhook(request, env) {
     event = await stripe.webhooks.constructEventAsync(
       body,
       request.headers.get('stripe-signature'),
-      env.STRIPE_WEBHOOK_SECRET,
+      env.STRIPE_WEBHOOK_SECRET.trim(),
       undefined,
       Stripe.createSubtleCryptoProvider()
     );
@@ -145,7 +146,7 @@ async function createPrintfulOrder(session, env) {
   const res = await fetch(`https://api.printful.com/orders?confirm=${confirm}`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${env.PRINTFUL_TOKEN}`,
+      Authorization: `Bearer ${env.PRINTFUL_TOKEN.trim()}`,
       'X-PF-Store-Id': env.PRINTFUL_STORE_ID,
       'Content-Type': 'application/json'
     },
