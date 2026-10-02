@@ -41,7 +41,8 @@ header { border-bottom: var(--rule); position: sticky; top: 0; background: var(-
 .brand img { width: 52px; height: 52px; filter: invert(1); }
 .brand span { font-weight: 800; font-size: 26px; text-transform: uppercase; line-height: 1; white-space: nowrap; }
 nav { display: flex; gap: 28px; }
-nav a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; padding: 4px 0; border-bottom: 3px solid transparent; }
+/* Transparent top border balances the hover underline so the link text stays vertically centered */
+nav a { font-weight: 600; font-size: 14px; text-transform: uppercase; text-decoration: none; padding: 4px 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
 nav a:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
 
 /* Hero */
