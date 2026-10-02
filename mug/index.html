@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jonesco Wraparound Mug | Jonesco Art Dept.</title>
+  <meta name="description" content="Black glossy 11 oz mug with the JONESCO© logo wrapped all the way around.">
+  <meta property="og:type" content="product">
+  <meta property="og:url" content="https://jonescoartdept.com/mug/">
+  <meta property="og:site_name" content="Jonesco Art Dept.">
+  <meta property="og:title" content="Jonesco Wraparound Mug">
+  <meta property="og:description" content="Black glossy 11 oz mug with the JONESCO© logo wrapped all the way around.">
+  <meta property="og:image" content="https://jonescoartdept.com/images/mug-set.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../jad-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/site.css">
+  <style>
+    .pdp .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; padding-top: 56px; padding-bottom: 64px; }
+    .gallery-main { aspect-ratio: 1 / 1; border: var(--rule); background: var(--paper); display: flex; align-items: center; justify-content: center; }
+    .gallery-main img { width: 100%; }
+    .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+    .thumbs button { padding: 0; border: var(--thin); background: var(--paper); cursor: pointer; aspect-ratio: 1 / 1; }
+    .thumbs button[aria-pressed="true"] { border: var(--rule); }
+    .thumbs img { width: 100%; height: 100%; object-fit: contain; }
+    .pdp h1 { font-size: clamp(40px, 5vw, 64px); margin-bottom: 0; padding-bottom: 16px; border-bottom: var(--rule); }
+    .pdp .price { font-size: 28px; }
+    .pdp .blurb { font-size: 17px; margin: 20px 0 24px; }
+    .buy { margin: 0; }
+    .buy .btn { width: 100%; }
+    .fine { font-size: 14px; margin: 12px 0 0; color: #444; }
+    @media (max-width: 860px) {
+      .pdp .wrap { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="../" aria-label="Jonesco Art Dept. shop">
+        <img src="../jad-logo.png" alt="">
+        <span>Jonesco Art Dept.</span>
+      </a>
+      <nav>
+        <a href="../yokai/">Yōkai</a>
+        <a href="../">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pdp">
+    <div class="wrap">
+      <div class="gallery">
+        <div class="gallery-main">
+          <img id="main-photo" src="../images/mug-left.jpg" width="1000" height="1000" alt="Jonesco mug, handle on the left, showing JON">
+        </div>
+        <div class="thumbs" role="group" aria-label="Mug photos">
+          <button type="button" aria-pressed="true" data-src="../images/mug-left.jpg" data-alt="Jonesco mug, handle on the left, showing JON"><img src="../images/mug-left.jpg" alt="Handle on the left"></button>
+          <button type="button" aria-pressed="false" data-src="../images/mug-front.jpg" data-alt="Jonesco mug from the front, showing NESC"><img src="../images/mug-front.jpg" alt="Front"></button>
+          <button type="button" aria-pressed="false" data-src="../images/mug-right.jpg" data-alt="Jonesco mug, handle on the right, showing SC©"><img src="../images/mug-right.jpg" alt="Handle on the right"></button>
+        </div>
+      </div>
+
+      <div>
+        <div class="tag">Made to order</div>
+        <h1>Jonesco Wraparound Mug</h1>
+        <div class="price">$18.00</div>
+        <ul class="specs">
+          <li><b>Size</b><span>11 oz</span></li>
+          <li><b>Finish</b><span>Black glossy ceramic</span></li>
+          <li><b>Care</b><span>Dishwasher &amp; microwave safe</span></li>
+          <li><b>Shipping</b><span>$5.95 flat, US only</span></li>
+        </ul>
+        <p class="blurb">The JONESCO© wordmark wraps all the way around, so it reads JON, NESC, SC© as you turn it. Printed when you order and shipped straight to you.</p>
+
+        <!-- Posts to the shop worker, which sends the buyer to Stripe's checkout page -->
+        <form class="buy" method="POST" action="" data-checkout>
+          <input type="hidden" name="item" value="mug">
+          <button class="btn" type="submit">
+            <span class="stack"><small>$18.00</small><span>Buy now</span></span><span class="plus">+</span>
+          </button>
+        </form>
+        <p class="fine">Secure checkout by Stripe. Apple Pay, Google Pay and cards accepted.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="../">Shop</a>
+        <a href="../yokai/">Yōkai Coloring Book</a>
+        <a href="https://jonesco.com" target="_blank" rel="noopener">Jonesco.com</a>
+      </div>
+      <small>© <span id="yr">2026</span> Jonesco Art Dept.</small>
+    </div>
+  </footer>
+
+  <script>
+    // Shop worker's checkout endpoint. Until it's set, the button stays disabled.
+    const CHECKOUT_URL = '';
+
+    const form = document.querySelector('[data-checkout]');
+    if (CHECKOUT_URL) {
+      form.action = CHECKOUT_URL;
+    } else {
+      const btn = form.querySelector('button');
+      btn.disabled = true;
+      btn.setAttribute('aria-disabled', 'true');
+      btn.innerHTML = '<span>Checkout coming soon</span><span class="plus">·</span>';
+    }
+
+    const main = document.getElementById('main-photo');
+    document.querySelector('.thumbs').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      main.src = b.dataset.src;
+      main.alt = b.dataset.alt;
+      document.querySelectorAll('.thumbs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    });
+
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
