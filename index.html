@@ -121,13 +121,7 @@
     .specs li b { font-weight: 600; text-transform: uppercase; font-size: 13px; padding-top: 2px; }
     .blurb { margin: 0 0 24px; }
     .product .btn { margin-top: auto; width: 100%; }
-    /* Phone-only tabs that switch between the two product cards */
     .phone-only { display: none; }
-    .size-tabs { display: none; grid-template-columns: 1fr 1fr; border: var(--rule); margin-bottom: 8px; }
-    .size-tabs button { font: inherit; font-weight: 800; font-size: 15px; text-transform: uppercase;
-      padding: 14px 8px; border: 0; background: var(--cream); color: var(--ink); cursor: pointer; }
-    .size-tabs button + button { border-left: var(--rule); }
-    .size-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
 
     /* Inside */
     /* White section, cream "paper": multiply tints the white in the scans cream and leaves the black lines alone */
@@ -156,11 +150,9 @@
 
     @media (max-width: 860px) {
       .hero .wrap, .products, .about .wrap { grid-template-columns: 1fr; }
-      .size-tabs { display: grid; }
       .desk-only { display: none; }
       .phone-only { display: inline; }
       .product:not(.active) { display: none; }
-      .product h3 { display: none; }  /* the selected tab already names it */
       .hero .wrap { gap: 32px; padding-top: 32px; padding-bottom: 40px; }
       .hero-art { order: -1; }
       .pages { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -249,7 +241,6 @@
           <p>Drawn to scale<span class="desk-only"> · Click a book to buy on Amazon</span><span class="phone-only"> · Tap a book to see its details</span></p>
         </div>
         <figure class="schematic" id="schematic" aria-label="Scale drawing of the two book sizes"></figure>
-        <div class="size-tabs" role="tablist" id="size-tabs" aria-label="Book size"></div>
         <div class="products" id="products"></div>
       </div>
     </section>
@@ -319,7 +310,7 @@
            </a>`
         : `<span class="btn" aria-disabled="true"><span>Coming soon</span><span class="plus">·</span></span>`;
       return `
-        <article class="product" id="${p.id}" role="tabpanel" aria-label="${esc(p.name)}">
+        <article class="product" id="${p.id}">
           <h3>${esc(p.name)}</h3>
           <div class="price">${priceText}</div>
           <ul class="specs">${p.specs.map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join('')}</ul>
@@ -328,16 +319,11 @@
         </article>`;
     }).join('');
 
-    // Tabs (shown on phones only) pick which card is visible
-    const tabs = document.getElementById('size-tabs');
-    tabs.innerHTML = PRODUCTS.map(p =>
-      `<button type="button" role="tab" data-id="${p.id}" aria-controls="${p.id}">${esc(p.name)}</button>`).join('');
+    // On phones only one card shows at a time; tapping a book in the drawing picks it
     function selectSize(id) {
-      tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.id === id));
       document.querySelectorAll('.product').forEach(el => el.classList.toggle('active', el.id === id));
       document.querySelectorAll('.dia').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
     }
-    tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) selectSize(b.dataset.id); });
 
     // Scale drawing of the books, side by side, sitting on a shared baseline
     (function drawSchematic() {
@@ -383,7 +369,7 @@
         `<svg viewBox="0 0 ${vbW} ${vbH}" role="group">${groups.join('')}</svg>`;
     })();
 
-    // On phones, tapping a drawn book picks its tab instead of leaving for Amazon
+    // On phones, tapping a drawn book shows its card instead of leaving for Amazon
     const phone = matchMedia('(max-width: 860px)');
     document.getElementById('schematic').addEventListener('click', e => {
       const book = e.target.closest('.dia');
