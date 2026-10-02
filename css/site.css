@@ -1,3 +1,7 @@
+/* Trade Gothic: Bold Condensed No. 20 (headlines, wordmark) and Bold No. 2 (labels). Trimmed WOFF2 in /fonts. */
+@font-face { font-family: 'Trade Gothic Bold Cond 20'; src: url('../fonts/TradeGothic-BoldCondTwenty.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Trade Gothic Bold 2'; src: url('../fonts/TradeGothic-BoldTwo.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
 /* Shared styles for every page on jonescoartdept.com */
 :root {
   --ink: #000;
@@ -16,7 +20,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Libre Franklin', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -79,7 +83,7 @@ h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-t
   background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
   background-size: 20px 20px; }
 .schematic svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; overflow: visible; }
-.schematic text { font-family: 'Poppins', system-ui, sans-serif; }
+.schematic text { font-family: 'Libre Franklin', system-ui, sans-serif; }
 .dia { cursor: pointer; }
 .dia .book { fill: var(--cream); stroke: var(--ink); stroke-width: 4; transition: fill .15s; }
 .dia .band { fill: var(--ink); }
@@ -166,3 +170,24 @@ footer small { font-size: 13px; }
   nav a.opt { display: none; }
   .ctas .btn { flex: 1 1 100%; }
 }
+
+/* ---- Trade Gothic type system ---- */
+/* Display: Bold Condensed No. 20 for headlines and the wordmark */
+h1, h2, h3, .brand span, .product h3, .tile-info h2 {
+  font-family: 'Trade Gothic Bold Cond 20', 'Libre Franklin', sans-serif; font-weight: 700; letter-spacing: 0;
+}
+h1 { font-size: clamp(56px, 8.6vw, 124px); line-height: .9; }
+h2 { font-size: clamp(36px, 4.8vw, 58px); }
+.brand span { font-size: 32px; }
+.product h3, .tile-info h2 { font-size: 32px; }
+
+/* Labels: Bold No. 2 for small uppercase text */
+.tag, nav a, .btn, .sec-head p, .price, .specs li b, footer a, .tile-price, .tile-sub b, .tile-flag, .dia text {
+  font-family: 'Trade Gothic Bold 2', 'Libre Franklin', sans-serif; font-weight: 700; letter-spacing: .03em;
+}
+@media (max-width: 560px) {
+  .brand span { font-size: 22px; }
+}
+
+/* Room for the macron in YŌKAI under the tight headline leading */
+.hero .tag { margin-bottom: 30px; }
