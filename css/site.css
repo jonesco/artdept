@@ -172,3 +172,9 @@ h2 { font-size: clamp(36px, 4.8vw, 58px); letter-spacing: -.01em; }
 /* Room for the macron in YŌKAI under the tight headline leading */
 .hero .tag { margin-bottom: 30px; }
 
+
+/* Case rule (Jonesco System 1.1): the page hero stays condensed caps;
+   titles read in groups (shop tiles, product cards) are sentence case in Bold No. 2 */
+.product h3, .tile-info h2 {
+  font-family: 'Trade Gothic Bold 2', 'Libre Franklin', sans-serif; text-transform: none; letter-spacing: 0; font-size: 26px; line-height: 1.15;
+}
