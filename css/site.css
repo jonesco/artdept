@@ -1,36 +1,10 @@
-/* Trade Gothic: Bold Condensed No. 20 (headlines, wordmark) and Bold No. 2 (labels). Trimmed WOFF2 in /fonts. */
-/* The fonts' built-in metrics leave more room below the baseline than above the caps, so all-caps text sat high.
-   These overrides split the same total height evenly around the cap height (722), centering caps in their boxes. */
-@font-face { font-family: 'Trade Gothic Bold Cond 20'; src: url('../fonts/TradeGothic-BoldCondTwenty.woff2') format('woff2'); font-weight: 700; font-display: swap;
-  ascent-override: 88.4%; descent-override: 16.2%; line-gap-override: 0%; }
-@font-face { font-family: 'Trade Gothic Bold 2'; src: url('../fonts/TradeGothic-BoldTwo.woff2') format('woff2'); font-weight: 700; font-display: swap;
-  ascent-override: 87.6%; descent-override: 15.4%; line-gap-override: 0%; }
-
-/* Shared styles for every page on jonescoartdept.com */
+/* jonescoartdept.com: built on the Jonesco System (system.css, loaded first).
+   Fonts, tokens and base come from there; this file holds what is specific to the shop. */
 :root {
-  --ink: #000;
-  --paper: #fff;
-  --cream: #fdf8dc;
-  --magenta: #e4148c;
-  --yellow: #ffe500;
-  --gray: #f2f2f2;
-  --rule: 4px solid var(--ink);
-  --thin: 2px solid var(--ink);
-  --wrap: 1200px;
+  --magenta: var(--accent);   /* site names for the system tokens */
+  --yellow: var(--highlight);
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'Libre Franklin', system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
-img { display: block; max-width: 100%; height: auto; }
-a { color: inherit; }
+body { font-size: 16px; }   /* shop copy is short and dense; the system default is 17px */
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
 .caps { text-transform: uppercase; letter-spacing: 0.02em; }
 
@@ -198,5 +172,3 @@ h2 { font-size: clamp(36px, 4.8vw, 58px); letter-spacing: -.01em; }
 /* Room for the macron in YŌKAI under the tight headline leading */
 .hero .tag { margin-bottom: 30px; }
 
-/* Text selection: yellow highlight, black text (same as wesjones.info) */
-::selection { background: var(--yellow); color: var(--ink); }
