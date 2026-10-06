@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page not found | Jonesco Art Dept.</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="Art Dept.">
+  <meta name="theme-color" content="#000000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jonesco/system@1.0.0/system.css">
+  <link rel="stylesheet" href="/css/site.css?v=3">
+  <style>
+    /* the page can be served at any path, so every link here is root-relative */
+    body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+    body > main { flex: 1; }
+    .lost .wrap { padding-top: 56px; padding-bottom: 88px; }
+    .lost h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(96px, 22vw, 300px); line-height: .9; letter-spacing: -.01em; margin: 0; padding-bottom: 20px; border-bottom: var(--rule); }
+    .home-link { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .03em; font-size: 18px; margin: 20px 0 0; }
+    .home-link a { color: var(--ink); }
+    .home-link a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="/" aria-label="Jonesco Art Dept. shop">
+        <img src="/jad-logo.png" alt="">
+        <span>Jonesco Art Dept.</span>
+      </a>
+      <nav>
+        <a href="/yokai/">Yōkai</a>
+        <a href="/">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lost">
+    <div class="wrap">
+      <h1 aria-label="Page not found"><span aria-hidden="true">#!$@*&amp;!</span></h1>
+      <p class="home-link"><a href="/">jonescoartdept.com</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="/">Shop</a>
+        <a href="https://jonesco.com" target="_blank" rel="noopener">Jonesco.com</a>
+      </div>
+      <small>© <span id="yr">2026</span> Jonesco Art Dept.</small>
+    </div>
+  </footer>
+
+  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
