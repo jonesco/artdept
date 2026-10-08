@@ -41,7 +41,7 @@ h1 em { font-style: normal; color: var(--magenta); display: block; }
   transition: background .15s, color .15s;
 }
 .btn:hover { background: var(--magenta); border-color: var(--magenta); }
-.btn.ghost { background: var(--newsprint, #edebe6); color: var(--ink); border-color: var(--ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }   /* outline only; fills black on hover */
 .btn.ghost:hover { background: var(--ink); color: var(--paper); }
 .btn .plus { font-size: 28px; font-weight: 400; line-height: 1; }
 .btn .stack { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
