@@ -41,7 +41,7 @@ h1 em { font-style: normal; color: var(--magenta); display: block; }
   transition: background .15s, color .15s;
 }
 .btn:hover { background: var(--magenta); border-color: var(--magenta); }
-.btn.ghost { background: var(--newsprint, #f7f7f7); color: var(--ink); border-color: var(--ink); }
+.btn.ghost { background: var(--newsprint, #edebe6); color: var(--ink); border-color: var(--ink); }
 .btn.ghost:hover { background: var(--ink); color: var(--paper); }
 .btn .plus { font-size: 28px; font-weight: 400; line-height: 1; }
 .btn .stack { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
@@ -65,7 +65,7 @@ h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-t
 .schematic svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; overflow: visible; }
 .schematic text { font-family: 'Libre Franklin', system-ui, sans-serif; }
 .dia { cursor: pointer; }
-.dia .book { fill: var(--newsprint, #f7f7f7); stroke: var(--ink); stroke-width: 4; transition: fill .15s; }
+.dia .book { fill: var(--newsprint, #edebe6); stroke: var(--ink); stroke-width: 4; transition: fill .15s; }
 .dia .band { fill: var(--ink); }
 .dia .title { fill: var(--yellow); font-weight: 800; text-anchor: middle; }
 .dia .safe { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 6 6; opacity: .45; }
@@ -95,10 +95,10 @@ h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-t
 
 /* Inside */
 /* White section, newsprint "paper": multiply tints the white in the scans newsprint and leaves the black lines alone */
-.all30-box { background: var(--newsprint, #f7f7f7); border: var(--rule); margin-bottom: 40px; }
+.all30-box { background: var(--newsprint, #edebe6); border: var(--rule); margin-bottom: 40px; }
 .all30 { mix-blend-mode: multiply; }
 .pages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-bottom: 56px; }
-.page { margin: 0; background: var(--newsprint, #f7f7f7); border: var(--rule); }
+.page { margin: 0; background: var(--newsprint, #edebe6); border: var(--rule); }
 .page img { mix-blend-mode: multiply; width: 100%; aspect-ratio: 5 / 8; object-fit: cover; }
 
 /* About */
