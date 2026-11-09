@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jonesco/system@1.3.0/system.css">
-  <link rel="stylesheet" href="../css/site.css?v=6">
+  <link rel="stylesheet" href="../css/site.css?v=7">
 </head>
 <body>
 
@@ -69,12 +69,12 @@
         </div>
         <div class="all30-box"><img class="all30" src="../images/all-30.jpg" width="1400" height="1400" loading="lazy" alt="All 30 yōkai from the book in a six by five grid of black line drawings"></div>
         <div class="pages">
-          <figure class="page"><img src="../images/page-hyakume.jpg" loading="lazy" alt="Coloring page: Hyakume"></figure>
-          <figure class="page"><img src="../images/page-oni.jpg" loading="lazy" alt="Coloring page: Oni"></figure>
-          <figure class="page"><img src="../images/page-tenjo-kudari.jpg" loading="lazy" alt="Coloring page: Tenjo kudari"></figure>
-          <figure class="page"><img src="../images/page-kamikiri.jpg" loading="lazy" alt="Coloring page: Kamikiri"></figure>
-          <figure class="page"><img src="../images/page-akugyo.jpg" loading="lazy" alt="Coloring page: Akugyo"></figure>
-          <figure class="page"><img src="../images/page-betobeto-san.jpg" loading="lazy" alt="Coloring page: Betobeto-san"></figure>
+          <figure class="page"><a class="page-open" href="../images/page-hyakume-lg.webp" aria-label="Enlarge Hyakume"><img src="../images/page-hyakume.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Hyakume"></a></figure>
+          <figure class="page"><a class="page-open" href="../images/page-oni-lg.webp" aria-label="Enlarge Oni"><img src="../images/page-oni.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Oni"></a></figure>
+          <figure class="page"><a class="page-open" href="../images/page-tenjo-kudari-lg.webp" aria-label="Enlarge Tenjo kudari"><img src="../images/page-tenjo-kudari.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Tenjo kudari"></a></figure>
+          <figure class="page"><a class="page-open" href="../images/page-kamikiri-lg.webp" aria-label="Enlarge Kamikiri"><img src="../images/page-kamikiri.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Kamikiri"></a></figure>
+          <figure class="page"><a class="page-open" href="../images/page-akugyo-lg.webp" aria-label="Enlarge Akugyo"><img src="../images/page-akugyo.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Akugyo"></a></figure>
+          <figure class="page"><a class="page-open" href="../images/page-betobeto-san-lg.webp" aria-label="Enlarge Betobeto-san"><img src="../images/page-betobeto-san.jpg" width="562" height="900" loading="lazy" alt="Coloring page: Betobeto-san"></a></figure>
         </div>
       </div>
     </section>
@@ -101,6 +101,13 @@
       </div>
     </section>
   </main>
+
+  <dialog class="lb" id="lb" aria-label="Coloring page">
+    <div class="lb-paper"><img id="lb-img" src="../images/page-hyakume-lg.webp" width="1250" height="2000" loading="lazy" alt="Coloring page: Hyakume"></div>
+    <button type="button" class="lb-btn lb-x" aria-label="Close">×</button>
+    <button type="button" class="lb-btn lb-prev" aria-label="Previous page">←</button>
+    <button type="button" class="lb-btn lb-next" aria-label="Next page">→</button>
+  </dialog>
 
   <footer>
     <div class="wrap">
@@ -225,6 +232,42 @@
     selectSize(PRODUCTS[0].id);
 
     document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // ---- Coloring pages open large ----
+    // Each thumbnail links to its large render, so without JS the link just opens the image.
+    (() => {
+      const lb = document.getElementById('lb');
+      if (!lb.showModal) return;
+      const img = document.getElementById('lb-img');
+      const links = [...document.querySelectorAll('.page-open')];
+      let i = 0;
+      const show = n => {
+        i = (n + links.length) % links.length;
+        const a = links[i];
+        img.src = a.href;
+        img.alt = a.querySelector('img').alt;
+        // fetch the neighbors so arrows feel instant
+        [i - 1, i + 1].forEach(k => { new Image().src = links[(k + links.length) % links.length].href; });
+      };
+      links.forEach((a, n) => a.addEventListener('click', e => { e.preventDefault(); show(n); lb.showModal(); }));
+      lb.querySelector('.lb-x').addEventListener('click', () => lb.close());
+      lb.querySelector('.lb-prev').addEventListener('click', () => show(i - 1));
+      lb.querySelector('.lb-next').addEventListener('click', () => show(i + 1));
+      lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });   // tap the dark area to close
+      lb.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') show(i - 1);
+        if (e.key === 'ArrowRight') show(i + 1);
+      });
+      lb.addEventListener('close', () => links[i].focus({ preventScroll: true }));
+      // swipe left or right on phones
+      let x0 = null;
+      lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend', e => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0; x0 = null;
+        if (Math.abs(dx) > 50) show(dx < 0 ? i + 1 : i - 1);
+      });
+    })();
   </script>
 </body>
 </html>
