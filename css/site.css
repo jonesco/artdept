@@ -178,27 +178,3 @@ h2 { font-size: clamp(36px, 4.8vw, 58px); letter-spacing: -.01em; }
 .product h3, .tile-info h2 {
   font-family: 'Trade Gothic Bold 2', 'Libre Franklin', sans-serif; text-transform: none; letter-spacing: 0; font-size: 26px; line-height: 1.15;
 }
-
-/* Coloring pages open large in a dialog: newsprint page on black, square black buttons with a white rule */
-.page-open { display: block; cursor: zoom-in; }
-.page-open:focus-visible { outline: 3px solid var(--magenta); outline-offset: 3px; }
-.lb { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
-.lb::backdrop { background: rgba(0,0,0,.92); }
-.lb[open] { display: grid; place-items: center; }
-html:has(.lb[open]) { overflow: hidden; }
-.lb-paper { background: var(--newsprint, #edebe6); line-height: 0; height: min(calc(100dvh - 48px), calc((100vw - 144px) * 1.6)); aspect-ratio: 5 / 8; }
-.lb-paper img { width: 100%; height: 100%; mix-blend-mode: multiply; }
-.lb-btn { position: absolute; width: 48px; height: 48px; display: grid; place-items: center; background: var(--ink); color: var(--paper); border: 2px solid var(--paper); font: 400 26px/1 'Libre Franklin', sans-serif; cursor: pointer; }
-.lb-btn:hover { background: var(--magenta); border-color: var(--magenta); }
-.lb-btn:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
-.lb-x { top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px; font-size: 32px; }
-.lb-prev, .lb-next { top: 50%; transform: translateY(-50%); }
-.lb-prev { left: 16px; }
-.lb-next { right: 16px; }
-@media (max-width: 560px) {
-  /* Phones: the page fills the width; arrows sit along the bottom, swipe works too */
-  .lb-paper { height: auto; width: calc(100vw - 32px); max-height: calc(100dvh - 160px); }
-  .lb-prev, .lb-next { top: auto; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: none; }
-  .lb-prev { left: calc(50% - 60px); }
-  .lb-next { right: calc(50% - 60px); }
-}
