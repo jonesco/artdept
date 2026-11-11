@@ -33,7 +33,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: safe center;
+  justify-content: flex-start; /* label and controls at the top */
   gap: 12px;
   padding-block: 16px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -83,7 +83,7 @@ h1 .latin { font-family: var(--label); font-size: 14px; letter-spacing: .08em; t
   .switch { display: none; }
   .pick { display: block; }
 }
-.stage { position: relative; flex: none; }
+.stage { position: relative; flex: none; margin-block: auto; } /* creature centered in the space below */
 canvas { display: block; position: absolute; }
 #pixel, #dither { image-rendering: crisp-edges; image-rendering: pixelated; }
 .hint { display: none; }
