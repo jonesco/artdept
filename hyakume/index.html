@@ -10,7 +10,7 @@
 <meta property="og:title" content="百目 Hyakume">
 <meta property="og:description" content="42 eyes, all watching you.">
 <meta property="og:url" content="https://jonescoartdept.com/hyakume/">
-<meta property="og:image" content="https://jonescoartdept.com/images/hyakume-preview.png">
+<meta property="og:image" content="https://jonescoartdept.com/images/hyakume-preview.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Jonesco Art Department logo beside the title 百目 Hyakume, 42 eyes, wandering">
@@ -63,7 +63,9 @@ body {
   padding-bottom: 10px;
 }
 h1 { margin: 0; font-weight: 400; font-size: 28px; line-height: 1; display: flex; align-items: baseline; gap: 12px; }
-h1 .latin { font-family: var(--label); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+/* The name in the Jonesco headline face, Trade Gothic Bold Condensed No. 20 */
+@font-face { font-family: 'Trade Gothic Bold Cond 20'; src: url('https://design.jonesco.com/v/1.3.0/fonts/TradeGothic-BoldCondTwenty.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+h1 .latin { font-family: 'Trade Gothic Bold Cond 20', 'Libre Franklin', sans-serif; font-weight: 700; font-size: 34px; line-height: .8; letter-spacing: .01em; text-transform: uppercase; color: var(--fg); }
 .right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .meta { margin: 0; font-family: var(--label); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
 .meta b { color: var(--accent); font-weight: 400; }
