@@ -112,6 +112,7 @@ canvas { display: block; position: absolute; }
       <button type="button" id="btn-riso" data-view="riso" aria-pressed="false">Riso</button>
       <button type="button" id="btn-cmy" data-view="cmy" aria-pressed="false">CMY</button>
       <button type="button" id="btn-paper" data-view="paper" aria-pressed="false">Paper</button>
+      <button type="button" id="btn-hatch" data-view="hatch" aria-pressed="false">Hatch</button>
       <button type="button" id="btn-dither" data-view="dither" aria-pressed="false">1-bit</button>
       <button type="button" id="btn-ascii" data-view="ascii" aria-pressed="false">ASCII</button>
     </div>
@@ -122,6 +123,7 @@ canvas { display: block; position: absolute; }
         <option value="riso">Riso</option>
         <option value="cmy">CMY</option>
         <option value="paper">Paper</option>
+        <option value="hatch">Crosshatch</option>
         <option value="dither">1-bit</option>
         <option value="ascii">ASCII</option>
       </select>
@@ -133,6 +135,7 @@ canvas { display: block; position: absolute; }
   <canvas id="riso" role="img" aria-label="Risograph print of Hyakume in fluorescent yellow and teal ink, its eyes following the pointer" hidden></canvas>
   <canvas id="cmy" role="img" aria-label="Hyakume printed in cyan, magenta and yellow halftone dots, its eyes following the pointer" hidden></canvas>
   <canvas id="paper" role="img" aria-label="Hyakume made of stacked cut-paper layers, its eyes following the pointer" hidden></canvas>
+  <canvas id="hatch" role="img" aria-label="Hyakume drawn in crosshatched pen and ink, its eyes following the pointer" hidden></canvas>
   <canvas id="dither" role="img" aria-label="One-bit dithered drawing of Hyakume in black dots on paper, its eyes following the pointer" hidden></canvas>
   <canvas id="ascii" role="img" aria-label="Hyakume drawn in typed characters, denser glyphs for darker tones, its eyes following the pointer" hidden></canvas>
   <canvas id="original" role="img" aria-label="The original Hyakume drawing, its eyes following the pointer" hidden></canvas>
@@ -1052,6 +1055,105 @@ canvas { display: block; position: absolute; }
     };
   }
 
+  // ---- Crosshatch version -----------------------------------------------------------------
+  // Pen and ink: each tone adds another direction of hatching (/, \, —, |) over the last, the
+  // darkest areas are solid ink, and every line wobbles a little so it reads hand-drawn.
+  function buildHatch(cv) {
+    const map = parse(MAPS.riso), { G, W, H } = map;
+    const eyes = findEyes(map, 20);
+    const R = 4, CW = W * R, CH = H * R;
+    const INK = "#1b1d18", PAPER = "#f3f3ee";
+    const TONE = { k: 1, t: 0.78, d: 0.7, c: 0.56, g: 0.46, y: 0.2, w: 0, ".": 0 };
+    const LAYERS = [ // [angle°, min tone, spacing px, width px]
+      [45, 0.12, 6.5, 1.05], [-45, 0.4, 6.5, 1.0], [0, 0.6, 5.5, 0.95], [90, 0.74, 5.5, 0.9],
+    ];
+    const hash = (x, y, s) => { const v = Math.sin(x * 127.1 + y * 311.7 + s * 74.7) * 43758.5453; return v - Math.floor(v); };
+    // a soft mask of the cells at or above a tone, scaled up smoothly
+    const maskOf = (grid, min) => {
+      const small = document.createElement("canvas"); small.width = W; small.height = H;
+      const sc = small.getContext("2d"), img = sc.createImageData(W, H);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (TONE[grid[y][x]] >= min) img.data[(y * W + x) * 4 + 3] = 255;
+      sc.putImageData(img, 0, 0);
+      const big = document.createElement("canvas"); big.width = CW; big.height = CH;
+      const bc = big.getContext("2d"); bc.imageSmoothingEnabled = true; bc.imageSmoothingQuality = "high";
+      bc.drawImage(small, 0, 0, CW, CH);
+      return big;
+    };
+    // hand-drawn parallel lines across the whole sheet at one angle
+    const strokes = (ctx, deg, gap, width, seed, x0 = 0, y0 = 0, w = CW, h = CH) => {
+      const a = deg * Math.PI / 180, dx = Math.cos(a), dy = Math.sin(a), nx = -dy, ny = dx;
+      const cx = x0 + w / 2, cy = y0 + h / 2, reach = Math.hypot(w, h) / 2 + gap;
+      ctx.strokeStyle = INK; ctx.lineCap = "round";
+      for (let k = Math.floor(-reach / gap), i = 0; k * gap <= reach; k++, i++) {
+        const off = k * gap + (hash(k, seed, 1) - 0.5) * gap * 0.35;
+        ctx.lineWidth = width * (0.75 + hash(k, seed, 2) * 0.5);
+        ctx.beginPath();
+        const steps = 24;
+        for (let j = 0; j <= steps; j++) {
+          const t = -reach + (2 * reach * j) / steps, wob = Math.sin(t / 37 + k * 1.7 + seed) * 0.6;
+          const px = cx + dx * t + nx * (off + wob), py = cy + dy * t + ny * (off + wob);
+          j ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+        ctx.stroke();
+      }
+    };
+    const print = grid => {
+      const sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
+      const sx = sheet.getContext("2d");
+      sx.fillStyle = PAPER; sx.fillRect(0, 0, CW, CH);
+      LAYERS.forEach(([deg, min, gap, width], i) => {
+        const layer = document.createElement("canvas"); layer.width = CW; layer.height = CH;
+        const lc = layer.getContext("2d");
+        strokes(lc, deg, gap, width, i + 1);
+        lc.globalCompositeOperation = "destination-in"; lc.drawImage(maskOf(grid, min), 0, 0);
+        sx.drawImage(layer, 0, 0);
+      });
+      // solid ink for the linework
+      const ink = document.createElement("canvas"); ink.width = CW; ink.height = CH;
+      const ic = ink.getContext("2d"); ic.fillStyle = INK; ic.fillRect(0, 0, CW, CH);
+      ic.globalCompositeOperation = "destination-in"; ic.drawImage(maskOf(grid, 0.95), 0, 0);
+      sx.drawImage(ink, 0, 0);
+      return sheet;
+    };
+    const base = print(G);
+    const shut = G.map(r => r.slice());
+    for (const e of eyes) {
+      for (const [x, y] of e.cells) shut[y][x] = "g";
+      e.clip = new Path2D();
+      for (const [x, y] of e.cells) e.clip.rect(x * R - 1, y * R - 1, R + 2, R + 2);
+      const xs = e.cells.map(c => c[0]); e.x0 = Math.min(...xs); e.x1 = Math.max(...xs);
+      e.r = (e.D / 2) * R * 0.94;
+    }
+    const closed = print(shut);
+    cv.width = CW; cv.height = CH;
+    const ctx = cv.getContext("2d");
+    return {
+      W, H, eyes, box: [27.64, 76.85, W * 2, H * 2],
+      draw(now) {
+        ctx.drawImage(base, 0, 0);
+        for (const e of eyes) {
+          if (now < e.blinkEnd) {
+            ctx.save(); ctx.clip(e.clip); ctx.drawImage(closed, 0, 0); ctx.restore();
+            ctx.beginPath(); ctx.moveTo((e.x0 + 0.8) * R, (e.cy + 0.5) * R);
+            ctx.quadraticCurveTo((e.cx + 0.5) * R, (e.cy + 0.5 + Math.max(0.6, e.D * 0.12)) * R, (e.x1 + 0.2) * R, (e.cy + 0.5) * R);
+            ctx.lineWidth = Math.max(2, e.D * 0.5); ctx.lineCap = "round"; ctx.strokeStyle = INK; ctx.stroke();
+            continue;
+          }
+          const { fx, fy } = place(e);
+          const cx = (fx + 0.5) * R, cy = (fy + 0.5) * R, r = e.r;
+          // the pupil: tight crosshatch fixed to the page, seen through a moving circle
+          ctx.save();
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+          for (const [deg, i] of [[45, 1], [-45, 2], [0, 3], [90, 4]]) strokes(ctx, deg, 2.6, 1.2, i + 10, cx - r, cy - r, 2 * r, 2 * r);
+          ctx.restore();
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.lineWidth = Math.max(1.4, r * 0.12); ctx.strokeStyle = INK; ctx.stroke();
+          ctx.fillStyle = PAPER;
+          ctx.beginPath(); ctx.arc(cx + r * 0.38, cy - r * 0.4, Math.max(1.6, r * 0.22), 0, Math.PI * 2); ctx.fill();
+        }
+      },
+    };
+  }
+
   // ---- 1-bit version -------------------------------------------------------------------
   // The pixel map turned into grey tones at twice its resolution, then Floyd–Steinberg error
   // diffusion down to two colors: ink and paper. Every tone is a pattern of dots.
@@ -1449,8 +1551,8 @@ canvas { display: block; position: absolute; }
   }
 
   // ---- Views & layout --------------------------------------------------------------
-  const canvases = { pixel: document.getElementById("pixel"), riso: document.getElementById("riso"), cmy: document.getElementById("cmy"), paper: document.getElementById("paper"), dither: document.getElementById("dither"), ascii: document.getElementById("ascii"), original: document.getElementById("original") };
-  const builders = { pixel: buildPixel, riso: buildRiso, cmy: buildCMY, paper: buildPaper, dither: buildDither, ascii: buildAscii, original: buildOriginal };
+  const canvases = { pixel: document.getElementById("pixel"), riso: document.getElementById("riso"), cmy: document.getElementById("cmy"), paper: document.getElementById("paper"), hatch: document.getElementById("hatch"), dither: document.getElementById("dither"), ascii: document.getElementById("ascii"), original: document.getElementById("original") };
+  const builders = { pixel: buildPixel, riso: buildRiso, cmy: buildCMY, paper: buildPaper, hatch: buildHatch, dither: buildDither, ascii: buildAscii, original: buildOriginal };
   const HINTS = {
     pixel: "Move the pointer and every eye follows. Hold still and they drift. Click to make them blink.",
     riso: "Two inks, fluorescent yellow and teal, printed slightly off register. The eyes still follow you.",
