@@ -1649,6 +1649,17 @@ canvas { display: block; position: absolute; }
     const sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
     const sx = sheet.getContext("2d"), img = sx.createImageData(CW, CH), D = img.data;
     const SUN = [CW * 0.86, CH * 0.06], SR = Math.max(CW, CH) * 0.55;
+    const shutImg = sx.createImageData(CW, CH), S = shutImg.data;
+    const paint = (A, o, x, y, base, t, h, c) => {
+      const mottle = 0.93 + 0.1 * vnoise(x / 15, y / 15, 2) + 0.05 * vnoise(x / 4.5, y / 4.5, 4);
+      const edge = 0.9 + 0.1 * Math.min(1, (c - 1.7) / 5);           // a touch darker where the glass meets the lead
+      const sun = Math.exp(-((x - SUN[0]) ** 2 + (y - SUN[1]) ** 2) / (2 * SR * SR)) * 0.4;
+      for (let k = 0; k < 3; k++) {
+        const v = base[k] * t * mottle * edge * (1 + h * (k === 0 ? 1 : k === 2 ? -1 : 0)); // panes drift warmer or cooler
+        A[o + k] = Math.max(0, Math.min(255, v + (255 - v) * sun));
+      }
+      A[o + 3] = 255;
+    };
     const isLead = i => pcls[i] !== NONE ? (pcls[i] === 0 || cut[i] <= 1.7 || sil[i] <= 3.4) : sil[i] <= 3.4;
     for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
       const i = y * CW + x, o = i * 4;
@@ -1659,27 +1670,22 @@ canvas { display: block; position: absolute; }
         continue;
       }
       if (pcls[i] === NONE) continue; // paper shows through
-      const base = GLASS[pcls[i]], t = tones[pane[i]], h = hues[pane[i]] * (pcls[i] === 6 ? 0 : 0.22);
-      const mottle = 0.93 + 0.1 * vnoise(x / 15, y / 15, 2) + 0.05 * vnoise(x / 4.5, y / 4.5, 4);
-      const edge = 0.9 + 0.1 * Math.min(1, (cut[i] - 1.7) / 5);           // a touch darker where the glass meets the lead
-      const sun = Math.exp(-((x - SUN[0]) ** 2 + (y - SUN[1]) ** 2) / (2 * SR * SR)) * 0.4;
-      for (let k = 0; k < 3; k++) {
-        const v = base[k] * t * mottle * edge * (1 + h * (k === 0 ? 1 : k === 2 ? -1 : 0)); // panes drift warmer or cooler
-        D[o + k] = Math.max(0, Math.min(255, v + (255 - v) * sun));
-      }
-      D[o + 3] = 255;
+      paint(D, o, x, y, GLASS[pcls[i]], tones[pane[i]], hues[pane[i]] * (pcls[i] === 6 ? 0 : 0.22), cut[i]);
+      // the same sheet with every eye shut: eye-white glass becomes body-green glass, same smooth edge
+      if (pcls[i] === 6) paint(S, o, x, y, GLASS[1], tones[pane[i]], hues[pane[i]] * 0.22, cut[i]);
     }
     sx.putImageData(img, 0, 0);
+    const shut = document.createElement("canvas"); shut.width = CW; shut.height = CH;
+    shut.getContext("2d").putImageData(shutImg, 0, 0);
 
     for (const e of eyes) {
       e.r = (e.D / 2) * 0.94;
-      e.clip = new Path2D();
-      for (const [x, y] of e.cells) e.clip.rect(x - 0.55, y - 0.55, 1.1, 1.1);
-      const xs = e.cells.map(c => c[0]); e.x0 = Math.min(...xs); e.x1 = Math.max(...xs);
+      const xs = e.cells.map(c => c[0]), ys = e.cells.map(c => c[1]); e.x0 = Math.min(...xs); e.x1 = Math.max(...xs);
+      e.px = [(e.x0 - 1) * R, (Math.min(...ys) - 1) * R, (e.x1 - e.x0 + 3) * R, (Math.max(...ys) - Math.min(...ys) + 3) * R]; // this eye on the shut sheet
     }
     cv.width = CW; cv.height = CH;
     const ctx = cv.getContext("2d");
-    const rgb = c => `rgb(${c.join(",")})`, LEADC = rgb(LEAD);
+    const LEADC = `rgb(${LEAD.join(",")})`;
     return {
       W, H, eyes, box: [27.64, 76.85, W * 2, H * 2],
       draw(now) {
@@ -1689,12 +1695,12 @@ canvas { display: block; position: absolute; }
         ctx.setTransform(R, 0, 0, R, R * 0.5, R * 0.5);
         for (const e of eyes) {
           if (now < e.blinkEnd) {
-            // shut: a green pane over the eye, cut along the lid by a lead line
-            ctx.save(); ctx.clip(e.clip);
-            ctx.fillStyle = rgb(GLASS[1]); ctx.fill(e.clip);
-            ctx.beginPath(); ctx.moveTo(e.x0, e.cy); ctx.quadraticCurveTo(e.cx, e.cy + Math.max(0.6, e.D * 0.12), e.x1, e.cy);
+            // shut: the eye's glass turns body green (from the shut sheet, so the edge stays smooth), cut along the lid by lead
+            const [px, py, pw, ph] = e.px;
+            ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(shut, px, py, pw, ph, px, py, pw, ph);
+            ctx.setTransform(R, 0, 0, R, R * 0.5, R * 0.5);
+            ctx.beginPath(); ctx.moveTo(e.x0 + 0.6, e.cy); ctx.quadraticCurveTo(e.cx, e.cy + Math.max(0.6, e.D * 0.12), e.x1 - 0.6, e.cy);
             ctx.lineWidth = Math.max(0.9, e.D * 0.16); ctx.lineCap = "round"; ctx.strokeStyle = LEADC; ctx.stroke();
-            ctx.restore();
             continue;
           }
           // pupil: a round of dark glass set in its own lead, with a pale glint pane
