@@ -1516,110 +1516,71 @@ canvas { display: block; position: absolute; }
       return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
     };
 
-    // tone of each map cell, and the patches of one glass color (4-connected)
-    const cls = new Uint8Array(W * H);
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = KEYS.indexOf(G[y][x]); cls[y * W + x] = i < 0 ? NONE : i; }
-    // Glass can't hold stipple: tiny specks of ink or color melt into the glass around them.
-    const blobs = () => {
-      const lab = new Int32Array(W * H).fill(-1), out = [];
-      for (let s0 = 0; s0 < W * H; s0++) {
-        if (lab[s0] >= 0 || cls[s0] === NONE) continue;
-        const id = out.length, cells = [], st = [s0]; lab[s0] = id;
+    // Everything is read off the original drawing at full resolution: its black becomes the lead and its
+    // fills pick the glass, so fine line work (the fan under the middle eye, the ridges) keeps its shape.
+    // The eyes still come from the map, so they line up with the other views.
+    let sheet = null, shut = null;
+    const art = new Image();
+    art.onload = () => {
+    const ic = document.createElement("canvas"); ic.width = CW; ic.height = CH;
+    const ig = ic.getContext("2d"); ig.drawImage(art, -27.64 * 2, -76.85 * 2, 612 * 2, 792 * 2);
+    const ipx = ig.getImageData(0, 0, CW, CH).data;
+    const PAL = [[1, [112, 176, 64]], [3, [8, 162, 172]], [5, [240, 236, 8]], [6, [240, 238, 210]]];
+    const pcls = new Uint8Array(N);
+    for (let i = 0; i < N; i++) {
+      const o = i * 4, r = ipx[o], g = ipx[o + 1], b = ipx[o + 2];
+      if (ipx[o + 3] < 128) { pcls[i] = NONE; continue; }
+      if (r + g + b < 300) { pcls[i] = 0; continue; }
+      let best = 1, bd = 1e9;
+      for (const [k, c] of PAL) { const d = (r - c[0]) ** 2 + (g - c[1]) ** 2 + (b - c[2]) ** 2; if (d < bd) { bd = d; best = k; } }
+      pcls[i] = best;
+    }
+    // Glass can't hold stipple: specks of ink or color too small to cut melt into what surrounds them.
+    // Eye whites always stay.
+    const lab = new Int32Array(N), votes = new Float32Array(8), st = [];
+    for (let pass = 0; pass < 2; pass++) {
+      lab.fill(-1); let id = 0;
+      for (let s0 = 0; s0 < N; s0++) {
+        if (lab[s0] >= 0 || pcls[s0] === NONE) continue;
+        const c0 = pcls[s0], cells = [s0]; lab[s0] = id; st.push(s0);
         while (st.length) {
-          const p = st.pop(), px = p % W, py = (p / W) | 0; cells.push(p);
-          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-            const nx = px + dx, ny = py + dy, q = ny * W + nx;
-            if (nx < 0 || ny < 0 || nx >= W || ny >= H || lab[q] >= 0 || cls[q] !== cls[s0]) continue;
-            lab[q] = id; st.push(q);
+          const p = st.pop(), px = p % CW;
+          for (const q of [px > 0 ? p - 1 : -1, px < CW - 1 ? p + 1 : -1, p - CW, p + CW]) {
+            if (q < 0 || q >= N || lab[q] >= 0 || pcls[q] !== c0) continue;
+            lab[q] = id; st.push(q); cells.push(q);
           }
         }
-        out.push({ c: cls[s0], cells });
-      }
-      return { lab, out };
-    };
-    for (let pass = 0; pass < 3; pass++) {
-      const { lab, out } = blobs();
-      out.forEach((b, id) => {
-        if (b.c === 6 || b.cells.length >= (b.c === 0 ? 7 : 16)) return; // eye whites always stay
-        const votes = new Float32Array(8);
-        for (const p of b.cells) {
-          const px = p % W, py = (p / W) | 0;
-          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-            const nx = px + dx, ny = py + dy, q = ny * W + nx;
-            if (nx < 0 || ny < 0 || nx >= W || ny >= H || lab[q] === id) continue;
-            if (cls[q] !== 0 && cls[q] !== NONE && cls[q] !== 6) votes[cls[q]]++;
+        if (c0 !== 6 && cells.length < (c0 === 0 ? 24 : 160)) {
+          votes.fill(0);
+          for (const p of cells) {
+            const px = p % CW;
+            for (const q of [px > 0 ? p - 1 : -1, px < CW - 1 ? p + 1 : -1, p - CW, p + CW]) {
+              if (q < 0 || q >= N || lab[q] === id) continue;
+              const c = pcls[q]; if (c !== NONE && c !== 0 && c !== 6) votes[c]++;
+            }
           }
+          let best = -1; for (let k = 1; k < 6; k++) if (votes[k] > 0 && (best < 0 || votes[k] > votes[best])) best = k;
+          if (best > 0) for (const p of cells) pcls[p] = best;
         }
-        let best = -1; for (let k = 1; k < 6; k++) if (votes[k] > 0 && (best < 0 || votes[k] > votes[best])) best = k;
-        if (best > 0) for (const p of b.cells) cls[p] = best;
-      });
-    }
-    const comp = new Int32Array(W * H).fill(-1), comps = [];
-    for (let s = 0; s < W * H; s++) {
-      if (comp[s] >= 0 || cls[s] === 0 || cls[s] === NONE) continue;
-      const id = comps.length, cells = [], st = [s]; comp[s] = id;
-      while (st.length) {
-        const p = st.pop(), px = p % W, py = (p / W) | 0; cells.push(p);
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-          const nx = px + dx, ny = py + dy, q = ny * W + nx;
-          if (nx < 0 || ny < 0 || nx >= W || ny >= H || comp[q] >= 0 || cls[q] !== cls[s]) continue;
-          comp[q] = id; st.push(q);
-        }
+        id++;
       }
-      comps.push({ cls: cls[s], cells });
     }
-    // seeds: about one pane per 80 cells, spread out by best-candidate sampling; eye whites stay whole
-    let seedN = 0;
-    comps.forEach((c, ci) => {
-      const want = c.cls === 6 ? 1 : Math.max(1, Math.round(c.cells.length / 150));
-      c.seeds = [];
-      for (let k = 0; k < want; k++) {
-        let best = null, bd = -1;
-        for (let t = 0; t < 12; t++) {
-          const p = c.cells[(hash(ci, k * 13 + t, 5) * c.cells.length) | 0], x = (p % W + 0.5) * R, y = (((p / W) | 0) + 0.5) * R;
-          const d = c.seeds.reduce((m, s) => Math.min(m, (s.x - x) ** 2 + (s.y - y) ** 2), 1e12);
-          if (d > bd) { bd = d; best = { x, y }; }
-        }
-        best.id = seedN++; best.tone = 0.84 + hash(best.id, 3, 9) * 0.26; best.hue = hash(best.id, 7, 2) - 0.5;
-        c.seeds.push(best);
-      }
-    });
-    const tones = new Float32Array(seedN), hues = new Float32Array(seedN); comps.forEach(c => c.seeds.forEach(s => { tones[s.id] = s.tone; hues[s.id] = s.hue; }));
-
-    // per pixel: smoothed tone (largest bilinear weight), then the nearest seed of its own patch
-    const soft = [];
-    for (let k = 0; k < 8; k++) {
-      const a = new Float32Array(W * H), b = new Float32Array(W * H);
-      for (let i = 0; i < W * H; i++) a[i] = cls[i] === k ? 1 : 0;
-      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; b[i] = a[i] * 0.5 + ((x > 0 ? a[i - 1] : a[i]) + (x < W - 1 ? a[i + 1] : a[i])) * 0.25; }
-      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; a[i] = b[i] * 0.5 + ((y > 0 ? b[i - W] : b[i]) + (y < H - 1 ? b[i + W] : b[i])) * 0.25; }
-      soft.push(a);
-    }
-    const pcls = new Uint8Array(N), pane = new Int32Array(N).fill(-1), wsum = new Float32Array(8);
+    // Panes: Voronoi cells around jittered seeds, cut again wherever the glass changes color.
+    // Each eye white is one pane.
+    const SP = 68, GX = Math.ceil(CW / SP) + 1, GY = Math.ceil(CH / SP) + 1, sx0 = [], sy0 = [];
+    for (let j = 0; j < GY; j++) for (let i = 0; i < GX; i++) { sx0.push((i + 0.15 + 0.7 * hash(i, j, 1)) * SP); sy0.push((j + 0.15 + 0.7 * hash(i, j, 2)) * SP); }
+    const tones = sx0.map((_, k) => 0.84 + hash(k, 3, 9) * 0.26), hues = sx0.map((_, k) => hash(k, 7, 2) - 0.5);
+    const seed = new Int32Array(N), key = new Int32Array(N);
     for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
-      const u = (x + 0.5) / R - 0.5, v = (y + 0.5) / R - 0.5, x0 = Math.floor(u), y0 = Math.floor(v), tx = u - x0, ty = v - y0;
-      wsum.fill(0);
-      for (const [dx, dy, w] of [[0, 0, (1 - tx) * (1 - ty)], [1, 0, tx * (1 - ty)], [0, 1, (1 - tx) * ty], [1, 1, tx * ty]]) {
-        const cx = Math.min(W - 1, Math.max(0, x0 + dx)), cy = Math.min(H - 1, Math.max(0, y0 + dy));
-        const q = cy * W + cx; for (let k = 0; k < 8; k++) wsum[k] += soft[k][q] * w;
+      const i = y * CW + x, c = pcls[i];
+      if (c === NONE || c === 0) { key[i] = -1; continue; }
+      const gi = (x / SP) | 0, gj = (y / SP) | 0; let best = 0, bd = 1e12;
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+        const a = gi + di, b = gj + dj; if (a < 0 || b < 0 || a >= GX || b >= GY) continue;
+        const k = b * GX + a, d = (sx0[k] - x) ** 2 + (sy0[k] - y) ** 2; if (d < bd) { bd = d; best = k; }
       }
-      let c = 0; for (let k = 1; k < 8; k++) if (wsum[k] > wsum[c]) c = k;
-      const i = y * CW + x; pcls[i] = c;
-      if (c === 0 || c === NONE) continue;
-      // the patch: the nearest map cell of this tone
-      const mx = Math.min(W - 1, (x / R) | 0), my = Math.min(H - 1, (y / R) | 0);
-      let cp = -1;
-      for (let r = 0; r <= 1 && cp < 0; r++) for (let dy = -r; dy <= r && cp < 0; dy++) for (let dx = -r; dx <= r; dx++) {
-        const nx = mx + dx, ny = my + dy;
-        if (nx >= 0 && ny >= 0 && nx < W && ny < H && cls[ny * W + nx] === c) { cp = comp[ny * W + nx]; break; }
-      }
-      if (cp < 0) { pcls[i] = 0; continue; }
-      let best = -1, bd = 1e12;
-      for (const s of comps[cp].seeds) { const d = (s.x - x) ** 2 + (s.y - y) ** 2; if (d < bd) { bd = d; best = s.id; } }
-      pane[i] = best;
+      seed[i] = best; key[i] = c === 6 ? -2 - lab[i] : best * 8 + c;
     }
-
-    // distance (in px) to the nearest cut between panes, and to the silhouette, by chamfer passes
     const dist = edge => {
       const d = new Float32Array(N).fill(1e6);
       for (let i = 0; i < N; i++) if (edge(i)) d[i] = 0;
@@ -1639,14 +1600,14 @@ canvas { display: block; position: absolute; }
       return d;
     };
     const cut = dist(i => {
-      if (pcls[i] === 0) return true;
-      const x = i % CW;
-      return (x < CW - 1 && pane[i + 1] !== pane[i]) || (i + CW < N && pane[i + CW] !== pane[i]);
+      if (key[i] === -1) return false;
+      const x = i % CW, r = x < CW - 1 ? key[i + 1] : -1, d = i + CW < N ? key[i + CW] : -1;
+      return (r !== -1 && r !== key[i]) || (d !== -1 && d !== key[i]);
     });
     const glassAt = i => pcls[i] !== NONE;
     const sil = dist(i => { const x = i % CW; return (x < CW - 1 && glassAt(i + 1) !== glassAt(i)) || (i + CW < N && glassAt(i + CW) !== glassAt(i)); });
 
-    const sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
+    sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
     const sx = sheet.getContext("2d"), img = sx.createImageData(CW, CH), D = img.data;
     const SUN = [CW * 0.86, CH * 0.06], SR = Math.max(CW, CH) * 0.55;
     const shutImg = sx.createImageData(CW, CH), S = shutImg.data;
@@ -1660,7 +1621,7 @@ canvas { display: block; position: absolute; }
       }
       A[o + 3] = 255;
     };
-    const isLead = i => pcls[i] !== NONE ? (pcls[i] === 0 || cut[i] <= 1.7 || sil[i] <= 3.4) : sil[i] <= 3.4;
+    const isLead = i => pcls[i] === 0 || sil[i] <= 3.4 || (pcls[i] !== NONE && cut[i] <= 1.7);
     for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
       const i = y * CW + x, o = i * 4;
       if (isLead(i)) {
@@ -1670,13 +1631,16 @@ canvas { display: block; position: absolute; }
         continue;
       }
       if (pcls[i] === NONE) continue; // paper shows through
-      paint(D, o, x, y, GLASS[pcls[i]], tones[pane[i]], hues[pane[i]] * (pcls[i] === 6 ? 0 : 0.22), cut[i]);
+      paint(D, o, x, y, GLASS[pcls[i]], pcls[i] === 6 ? 1 : tones[seed[i]], pcls[i] === 6 ? 0 : hues[seed[i]] * 0.22, cut[i]); // an eye white is one even pane
       // the same sheet with every eye shut: eye-white glass becomes body-green glass, same smooth edge
-      if (pcls[i] === 6) paint(S, o, x, y, GLASS[1], tones[pane[i]], hues[pane[i]] * 0.22, cut[i]);
+      if (pcls[i] === 6) paint(S, o, x, y, GLASS[1], 1, 0, cut[i]);
     }
     sx.putImageData(img, 0, 0);
-    const shut = document.createElement("canvas"); shut.width = CW; shut.height = CH;
-    shut.getContext("2d").putImageData(shutImg, 0, 0);
+    const sh = document.createElement("canvas"); sh.width = CW; sh.height = CH;
+    sh.getContext("2d").putImageData(shutImg, 0, 0);
+    shut = sh;
+    };
+    art.src = ART;
 
     for (const e of eyes) {
       e.r = (e.D / 2) * 0.94;
@@ -1691,6 +1655,7 @@ canvas { display: block; position: absolute; }
       draw(now) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, CW, CH);
+        if (!shut) return;
         ctx.drawImage(sheet, 0, 0);
         ctx.setTransform(R, 0, 0, R, R * 0.5, R * 0.5);
         for (const e of eyes) {
