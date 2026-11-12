@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Hyakume · Jonesco Art Dept.</title>
+<!-- Its own icon: the original drawing, so a home-screen shortcut opens on the creature -->
+<link rel="icon" type="image/png" sizes="32x32" href="/hyakume/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/hyakume/icons/apple-touch-icon.png">
+<link rel="manifest" href="/hyakume/manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Hyakume">
+<meta name="theme-color" content="#f3f3ee">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Jonesco Art Dept.">
 <meta property="og:title" content="百目 Hyakume">
@@ -78,7 +84,7 @@ h1 .latin { font-family: 'Trade Gothic Bold Cond 20', 'Libre Franklin', sans-ser
 .switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 .switch button:hover:not([aria-pressed="true"]) { background: var(--chip); }
 .switch button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-/* On phones the seven buttons become one dropdown. */
+/* On phones the buttons become one dropdown. */
 .pick { display: none; position: relative; }
 .pick select {
   appearance: none; -webkit-appearance: none; border-radius: 0;
@@ -115,6 +121,7 @@ canvas { display: block; position: absolute; }
       <button type="button" id="btn-hatch" data-view="hatch" aria-pressed="false">Hatch</button>
       <button type="button" id="btn-dither" data-view="dither" aria-pressed="false">1-bit</button>
       <button type="button" id="btn-ascii" data-view="ascii" aria-pressed="false">ASCII</button>
+      <button type="button" id="btn-glass" data-view="glass" aria-pressed="false">Glass</button>
     </div>
     <div class="pick">
       <select id="pick" aria-label="Print style">
@@ -126,6 +133,7 @@ canvas { display: block; position: absolute; }
         <option value="hatch">Crosshatch</option>
         <option value="dither">1-bit</option>
         <option value="ascii">ASCII</option>
+        <option value="glass">Stained glass</option>
       </select>
     </div>
   </div>
@@ -138,6 +146,7 @@ canvas { display: block; position: absolute; }
   <canvas id="hatch" role="img" aria-label="Hyakume drawn in crosshatched pen and ink, its eyes following the pointer" hidden></canvas>
   <canvas id="dither" role="img" aria-label="One-bit dithered drawing of Hyakume in black dots on paper, its eyes following the pointer" hidden></canvas>
   <canvas id="ascii" role="img" aria-label="Hyakume drawn in typed characters, denser glyphs for darker tones, its eyes following the pointer" hidden></canvas>
+  <canvas id="glass" role="img" aria-label="Hyakume as a stained glass window: panes of green, teal and yellow glass held in dark lead lines, its eyes following the pointer" hidden></canvas>
   <canvas id="original" role="img" aria-label="The original Hyakume drawing, its eyes following the pointer" hidden></canvas>
 </div>
 <p class="hint" id="hint"></p>
@@ -1487,6 +1496,219 @@ canvas { display: block; position: absolute; }
   }
 
 
+  // ---- Stained glass version ---------------------------------------------------------
+  // Leaded glass: every tone of the drawing becomes colored glass, broken into irregular panes
+  // (Voronoi cells inside each patch of one color), and the drawn ink lines become the lead.
+  // Each pane is ringed in lead with a faint sheen, mottled, a little different in tone from its
+  // neighbors, and lighter toward the light at the top right. The silhouette gets the heaviest lead.
+  function buildGlass(cv) {
+    const map = parse(MAPS.riso), { G, W, H } = map;
+    const eyes = findEyes(map, 20);
+    const R = 4, CW = W * R, CH = H * R, N = CW * CH;
+    const LEAD = [33, 30, 28];
+    const KEYS = ["k", "g", "d", "c", "t", "y", "w"], NONE = 7; // '.' is no glass
+    const GLASS = [null, [92, 166, 62], [40, 124, 74], [26, 166, 170], [12, 106, 118], [240, 200, 58], [246, 238, 212]];
+    const hash = (x, y, s) => { const v = Math.sin(x * 127.1 + y * 311.7 + s * 74.7) * 43758.5453; return v - Math.floor(v); };
+    const vnoise = (x, y, s) => {
+      const x0 = Math.floor(x), y0 = Math.floor(y), tx = x - x0, ty = y - y0;
+      const a = hash(x0, y0, s), b = hash(x0 + 1, y0, s), c = hash(x0, y0 + 1, s), d = hash(x0 + 1, y0 + 1, s);
+      const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+      return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+    };
+
+    // tone of each map cell, and the patches of one glass color (4-connected)
+    const cls = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = KEYS.indexOf(G[y][x]); cls[y * W + x] = i < 0 ? NONE : i; }
+    // Glass can't hold stipple: tiny specks of ink or color melt into the glass around them.
+    const blobs = () => {
+      const lab = new Int32Array(W * H).fill(-1), out = [];
+      for (let s0 = 0; s0 < W * H; s0++) {
+        if (lab[s0] >= 0 || cls[s0] === NONE) continue;
+        const id = out.length, cells = [], st = [s0]; lab[s0] = id;
+        while (st.length) {
+          const p = st.pop(), px = p % W, py = (p / W) | 0; cells.push(p);
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nx = px + dx, ny = py + dy, q = ny * W + nx;
+            if (nx < 0 || ny < 0 || nx >= W || ny >= H || lab[q] >= 0 || cls[q] !== cls[s0]) continue;
+            lab[q] = id; st.push(q);
+          }
+        }
+        out.push({ c: cls[s0], cells });
+      }
+      return { lab, out };
+    };
+    for (let pass = 0; pass < 3; pass++) {
+      const { lab, out } = blobs();
+      out.forEach((b, id) => {
+        if (b.c === 6 || b.cells.length >= (b.c === 0 ? 7 : 16)) return; // eye whites always stay
+        const votes = new Float32Array(8);
+        for (const p of b.cells) {
+          const px = p % W, py = (p / W) | 0;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nx = px + dx, ny = py + dy, q = ny * W + nx;
+            if (nx < 0 || ny < 0 || nx >= W || ny >= H || lab[q] === id) continue;
+            if (cls[q] !== 0 && cls[q] !== NONE && cls[q] !== 6) votes[cls[q]]++;
+          }
+        }
+        let best = -1; for (let k = 1; k < 6; k++) if (votes[k] > 0 && (best < 0 || votes[k] > votes[best])) best = k;
+        if (best > 0) for (const p of b.cells) cls[p] = best;
+      });
+    }
+    const comp = new Int32Array(W * H).fill(-1), comps = [];
+    for (let s = 0; s < W * H; s++) {
+      if (comp[s] >= 0 || cls[s] === 0 || cls[s] === NONE) continue;
+      const id = comps.length, cells = [], st = [s]; comp[s] = id;
+      while (st.length) {
+        const p = st.pop(), px = p % W, py = (p / W) | 0; cells.push(p);
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = px + dx, ny = py + dy, q = ny * W + nx;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H || comp[q] >= 0 || cls[q] !== cls[s]) continue;
+          comp[q] = id; st.push(q);
+        }
+      }
+      comps.push({ cls: cls[s], cells });
+    }
+    // seeds: about one pane per 80 cells, spread out by best-candidate sampling; eye whites stay whole
+    let seedN = 0;
+    comps.forEach((c, ci) => {
+      const want = c.cls === 6 ? 1 : Math.max(1, Math.round(c.cells.length / 150));
+      c.seeds = [];
+      for (let k = 0; k < want; k++) {
+        let best = null, bd = -1;
+        for (let t = 0; t < 12; t++) {
+          const p = c.cells[(hash(ci, k * 13 + t, 5) * c.cells.length) | 0], x = (p % W + 0.5) * R, y = (((p / W) | 0) + 0.5) * R;
+          const d = c.seeds.reduce((m, s) => Math.min(m, (s.x - x) ** 2 + (s.y - y) ** 2), 1e12);
+          if (d > bd) { bd = d; best = { x, y }; }
+        }
+        best.id = seedN++; best.tone = 0.84 + hash(best.id, 3, 9) * 0.26; best.hue = hash(best.id, 7, 2) - 0.5;
+        c.seeds.push(best);
+      }
+    });
+    const tones = new Float32Array(seedN), hues = new Float32Array(seedN); comps.forEach(c => c.seeds.forEach(s => { tones[s.id] = s.tone; hues[s.id] = s.hue; }));
+
+    // per pixel: smoothed tone (largest bilinear weight), then the nearest seed of its own patch
+    const soft = [];
+    for (let k = 0; k < 8; k++) {
+      const a = new Float32Array(W * H), b = new Float32Array(W * H);
+      for (let i = 0; i < W * H; i++) a[i] = cls[i] === k ? 1 : 0;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; b[i] = a[i] * 0.5 + ((x > 0 ? a[i - 1] : a[i]) + (x < W - 1 ? a[i + 1] : a[i])) * 0.25; }
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; a[i] = b[i] * 0.5 + ((y > 0 ? b[i - W] : b[i]) + (y < H - 1 ? b[i + W] : b[i])) * 0.25; }
+      soft.push(a);
+    }
+    const pcls = new Uint8Array(N), pane = new Int32Array(N).fill(-1), wsum = new Float32Array(8);
+    for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
+      const u = (x + 0.5) / R - 0.5, v = (y + 0.5) / R - 0.5, x0 = Math.floor(u), y0 = Math.floor(v), tx = u - x0, ty = v - y0;
+      wsum.fill(0);
+      for (const [dx, dy, w] of [[0, 0, (1 - tx) * (1 - ty)], [1, 0, tx * (1 - ty)], [0, 1, (1 - tx) * ty], [1, 1, tx * ty]]) {
+        const cx = Math.min(W - 1, Math.max(0, x0 + dx)), cy = Math.min(H - 1, Math.max(0, y0 + dy));
+        const q = cy * W + cx; for (let k = 0; k < 8; k++) wsum[k] += soft[k][q] * w;
+      }
+      let c = 0; for (let k = 1; k < 8; k++) if (wsum[k] > wsum[c]) c = k;
+      const i = y * CW + x; pcls[i] = c;
+      if (c === 0 || c === NONE) continue;
+      // the patch: the nearest map cell of this tone
+      const mx = Math.min(W - 1, (x / R) | 0), my = Math.min(H - 1, (y / R) | 0);
+      let cp = -1;
+      for (let r = 0; r <= 1 && cp < 0; r++) for (let dy = -r; dy <= r && cp < 0; dy++) for (let dx = -r; dx <= r; dx++) {
+        const nx = mx + dx, ny = my + dy;
+        if (nx >= 0 && ny >= 0 && nx < W && ny < H && cls[ny * W + nx] === c) { cp = comp[ny * W + nx]; break; }
+      }
+      if (cp < 0) { pcls[i] = 0; continue; }
+      let best = -1, bd = 1e12;
+      for (const s of comps[cp].seeds) { const d = (s.x - x) ** 2 + (s.y - y) ** 2; if (d < bd) { bd = d; best = s.id; } }
+      pane[i] = best;
+    }
+
+    // distance (in px) to the nearest cut between panes, and to the silhouette, by chamfer passes
+    const dist = edge => {
+      const d = new Float32Array(N).fill(1e6);
+      for (let i = 0; i < N; i++) if (edge(i)) d[i] = 0;
+      const A = 1, B = Math.SQRT2;
+      for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
+        const i = y * CW + x; let v = d[i];
+        if (x > 0) v = Math.min(v, d[i - 1] + A);
+        if (y > 0) { v = Math.min(v, d[i - CW] + A); if (x > 0) v = Math.min(v, d[i - CW - 1] + B); if (x < CW - 1) v = Math.min(v, d[i - CW + 1] + B); }
+        d[i] = v;
+      }
+      for (let y = CH - 1; y >= 0; y--) for (let x = CW - 1; x >= 0; x--) {
+        const i = y * CW + x; let v = d[i];
+        if (x < CW - 1) v = Math.min(v, d[i + 1] + A);
+        if (y < CH - 1) { v = Math.min(v, d[i + CW] + A); if (x < CW - 1) v = Math.min(v, d[i + CW + 1] + B); if (x > 0) v = Math.min(v, d[i + CW - 1] + B); }
+        d[i] = v;
+      }
+      return d;
+    };
+    const cut = dist(i => {
+      if (pcls[i] === 0) return true;
+      const x = i % CW;
+      return (x < CW - 1 && pane[i + 1] !== pane[i]) || (i + CW < N && pane[i + CW] !== pane[i]);
+    });
+    const glassAt = i => pcls[i] !== NONE;
+    const sil = dist(i => { const x = i % CW; return (x < CW - 1 && glassAt(i + 1) !== glassAt(i)) || (i + CW < N && glassAt(i + CW) !== glassAt(i)); });
+
+    const sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
+    const sx = sheet.getContext("2d"), img = sx.createImageData(CW, CH), D = img.data;
+    const SUN = [CW * 0.86, CH * 0.06], SR = Math.max(CW, CH) * 0.55;
+    const isLead = i => pcls[i] !== NONE ? (pcls[i] === 0 || cut[i] <= 1.7 || sil[i] <= 3.4) : sil[i] <= 3.4;
+    for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) {
+      const i = y * CW + x, o = i * 4;
+      if (isLead(i)) {
+        // lead came: dark, with a faint sheen along its upper left edge
+        const lit = x > 1 && y > 1 && !isLead(i - 2 * CW - 2) ? 26 : 0;
+        D[o] = LEAD[0] + lit; D[o + 1] = LEAD[1] + lit; D[o + 2] = LEAD[2] + lit; D[o + 3] = 255;
+        continue;
+      }
+      if (pcls[i] === NONE) continue; // paper shows through
+      const base = GLASS[pcls[i]], t = tones[pane[i]], h = hues[pane[i]] * (pcls[i] === 6 ? 0 : 0.22);
+      const mottle = 0.93 + 0.1 * vnoise(x / 15, y / 15, 2) + 0.05 * vnoise(x / 4.5, y / 4.5, 4);
+      const edge = 0.9 + 0.1 * Math.min(1, (cut[i] - 1.7) / 5);           // a touch darker where the glass meets the lead
+      const sun = Math.exp(-((x - SUN[0]) ** 2 + (y - SUN[1]) ** 2) / (2 * SR * SR)) * 0.4;
+      for (let k = 0; k < 3; k++) {
+        const v = base[k] * t * mottle * edge * (1 + h * (k === 0 ? 1 : k === 2 ? -1 : 0)); // panes drift warmer or cooler
+        D[o + k] = Math.max(0, Math.min(255, v + (255 - v) * sun));
+      }
+      D[o + 3] = 255;
+    }
+    sx.putImageData(img, 0, 0);
+
+    for (const e of eyes) {
+      e.r = (e.D / 2) * 0.94;
+      e.clip = new Path2D();
+      for (const [x, y] of e.cells) e.clip.rect(x - 0.55, y - 0.55, 1.1, 1.1);
+      const xs = e.cells.map(c => c[0]); e.x0 = Math.min(...xs); e.x1 = Math.max(...xs);
+    }
+    cv.width = CW; cv.height = CH;
+    const ctx = cv.getContext("2d");
+    const rgb = c => `rgb(${c.join(",")})`, LEADC = rgb(LEAD);
+    return {
+      W, H, eyes, box: [27.64, 76.85, W * 2, H * 2],
+      draw(now) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, CW, CH);
+        ctx.drawImage(sheet, 0, 0);
+        ctx.setTransform(R, 0, 0, R, R * 0.5, R * 0.5);
+        for (const e of eyes) {
+          if (now < e.blinkEnd) {
+            // shut: a green pane over the eye, cut along the lid by a lead line
+            ctx.save(); ctx.clip(e.clip);
+            ctx.fillStyle = rgb(GLASS[1]); ctx.fill(e.clip);
+            ctx.beginPath(); ctx.moveTo(e.x0, e.cy); ctx.quadraticCurveTo(e.cx, e.cy + Math.max(0.6, e.D * 0.12), e.x1, e.cy);
+            ctx.lineWidth = Math.max(0.9, e.D * 0.16); ctx.lineCap = "round"; ctx.strokeStyle = LEADC; ctx.stroke();
+            ctx.restore();
+            continue;
+          }
+          // pupil: a round of dark glass set in its own lead, with a pale glint pane
+          const { fx, fy } = place(e);
+          ctx.beginPath(); ctx.arc(fx, fy, e.r, 0, Math.PI * 2);
+          ctx.fillStyle = "#1d3036"; ctx.fill();
+          ctx.lineWidth = 0.42; ctx.strokeStyle = LEADC; ctx.stroke();
+          ctx.beginPath(); ctx.arc(fx + e.r * 0.36, fy - e.r * 0.38, Math.max(0.45, e.r * 0.24), 0, Math.PI * 2);
+          ctx.fillStyle = "#e9f1ee"; ctx.fill();
+        }
+      },
+    };
+  }
+
   // ---- Original version ------------------------------------------------------------
   // The source drawing itself, with only the drawn pupils painted out. Each live pupil
   // starts at the size and spot of the one it replaces, so at rest it matches the original.
@@ -1567,8 +1789,8 @@ canvas { display: block; position: absolute; }
   }
 
   // ---- Views & layout --------------------------------------------------------------
-  const canvases = { pixel: document.getElementById("pixel"), riso: document.getElementById("riso"), cmy: document.getElementById("cmy"), paper: document.getElementById("paper"), hatch: document.getElementById("hatch"), dither: document.getElementById("dither"), ascii: document.getElementById("ascii"), original: document.getElementById("original") };
-  const builders = { pixel: buildPixel, riso: buildRiso, cmy: buildCMY, paper: buildPaper, hatch: buildHatch, dither: buildDither, ascii: buildAscii, original: buildOriginal };
+  const canvases = { glass: document.getElementById("glass"), pixel: document.getElementById("pixel"), riso: document.getElementById("riso"), cmy: document.getElementById("cmy"), paper: document.getElementById("paper"), hatch: document.getElementById("hatch"), dither: document.getElementById("dither"), ascii: document.getElementById("ascii"), original: document.getElementById("original") };
+  const builders = { glass: buildGlass, pixel: buildPixel, riso: buildRiso, cmy: buildCMY, paper: buildPaper, hatch: buildHatch, dither: buildDither, ascii: buildAscii, original: buildOriginal };
   const HINTS = {
     pixel: "Move the pointer and every eye follows. Hold still and they drift. Click to make them blink.",
     riso: "Two inks, fluorescent yellow and teal, printed slightly off register. The eyes still follow you.",
@@ -1576,6 +1798,7 @@ canvas { display: block; position: absolute; }
     paper: "Cut paper, one sheet per tone, stacked darkest at the back. The eyes still follow you.",
     dither: "Two colors, no grays. Every tone is a pattern of dots, like an old Mac screen. Click to make them blink.",
     ascii: "Typed, not drawn. Darker tones pick denser glyphs from the ramp. The eyes still follow you.",
+    glass: "Leaded glass: each tone cut into panes, the ink lines turned to lead, lighter toward the sun. The eyes still follow you.",
     original: "The original drawing, untouched except for the pupils. Hold still and they settle back where they were drawn.",
   };
   const views = {};
