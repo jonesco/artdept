@@ -143,7 +143,7 @@ canvas { display: block; position: absolute; }
   <canvas id="riso" role="img" aria-label="Risograph print of Hyakume in fluorescent yellow and teal ink, its eyes following the pointer" hidden></canvas>
   <canvas id="cmy" role="img" aria-label="Hyakume printed in cyan, magenta and yellow halftone dots, its eyes following the pointer" hidden></canvas>
   <canvas id="paper" role="img" aria-label="Hyakume made of stacked cut-paper layers, its eyes following the pointer" hidden></canvas>
-  <canvas id="hatch" role="img" aria-label="Hyakume drawn in crosshatched pen and ink, its eyes following the pointer" hidden></canvas>
+  <canvas id="hatch" role="img" aria-label="Hyakume drawn in crosshatched blue ballpoint pen, its eyes following the pointer" hidden></canvas>
   <canvas id="dither" role="img" aria-label="One-bit dithered drawing of Hyakume in black dots on paper, its eyes following the pointer" hidden></canvas>
   <canvas id="ascii" role="img" aria-label="Hyakume drawn in typed characters, denser glyphs for darker tones, its eyes following the pointer" hidden></canvas>
   <canvas id="glass" role="img" aria-label="Hyakume as a stained glass window: panes of green, teal and yellow glass held in dark lead lines, its eyes following the pointer" hidden></canvas>
@@ -1065,13 +1065,15 @@ canvas { display: block; position: absolute; }
   }
 
   // ---- Crosshatch version -----------------------------------------------------------------
-  // Pen and ink: each tone adds another direction of hatching (/, \, —, |) over the last, the
-  // darkest areas are solid ink, and every line wobbles a little so it reads hand-drawn.
+  // Blue ballpoint: each tone adds another direction of hatching (/, \, —, |) over the last, the
+  // darkest areas are filled in, and every line wobbles a little so it reads hand-drawn. Ballpoint
+  // ink is translucent and uneven, so each stroke lays down a little more or less of it, and the
+  // layers multiply: crossings come out darker than either line.
   function buildHatch(cv) {
     const map = parse(MAPS.riso), { G, W, H } = map;
     const eyes = findEyes(map, 20);
     const R = 4, CW = W * R, CH = H * R;
-    const INK = "#1b1d18", PAPER = "#f3f3ee";
+    const INK = "#1f3c9a", PAPER = "#f3f3ee"; // ballpoint blue
     const TONE = { k: 1, t: 0.78, d: 0.7, c: 0.56, g: 0.46, y: 0.2, w: 0, ".": 0 };
     const LAYERS = [ // [angle°, min tone, spacing px, width px]
       [45, 0.12, 6.5, 1.05], [-45, 0.4, 6.5, 1.0], [0, 0.6, 5.5, 0.95], [90, 0.74, 5.5, 0.9],
@@ -1112,6 +1114,7 @@ canvas { display: block; position: absolute; }
       for (let k = Math.floor(-reach / gap), i = 0; k * gap <= reach; k++, i++) {
         const off = k * gap + (hash(k, seed, 1) - 0.5) * gap * 0.35;
         ctx.lineWidth = width * (0.75 + hash(k, seed, 2) * 0.5);
+        ctx.globalAlpha = 0.62 + hash(k, seed, 3) * 0.33; // pressure: some strokes lay down more ink
         ctx.beginPath();
         const steps = 24;
         for (let j = 0; j <= steps; j++) {
@@ -1121,6 +1124,7 @@ canvas { display: block; position: absolute; }
         }
         ctx.stroke();
       }
+      ctx.globalAlpha = 1;
     };
     const print = grid => {
       const sheet = document.createElement("canvas"); sheet.width = CW; sheet.height = CH;
@@ -1131,13 +1135,14 @@ canvas { display: block; position: absolute; }
         const lc = layer.getContext("2d");
         strokes(lc, deg, gap, width, i + 1);
         lc.globalCompositeOperation = "destination-in"; lc.drawImage(maskOf(grid, min), 0, 0);
-        sx.drawImage(layer, 0, 0);
+        sx.globalCompositeOperation = "multiply"; sx.drawImage(layer, 0, 0); sx.globalCompositeOperation = "source-over";
       });
       // solid ink for the linework
       const ink = document.createElement("canvas"); ink.width = CW; ink.height = CH;
       const ic = ink.getContext("2d"); ic.fillStyle = INK; ic.fillRect(0, 0, CW, CH);
       ic.globalCompositeOperation = "destination-in"; ic.drawImage(maskOf(grid, 0.95), 0, 0);
-      sx.drawImage(ink, 0, 0);
+      sx.globalCompositeOperation = "multiply"; sx.globalAlpha = 0.94; sx.drawImage(ink, 0, 0); // filled in, not quite opaque
+      sx.globalAlpha = 1; sx.globalCompositeOperation = "source-over";
       return sheet;
     };
     const base = print(G);
