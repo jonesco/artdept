@@ -14,12 +14,12 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Jonesco Art Dept.">
 <meta property="og:title" content="百目 Hyakume">
-<meta property="og:description" content="42 eyes, all watching you.">
+<meta property="og:description" content="100 eyes, all watching you.">
 <meta property="og:url" content="https://jonescoartdept.com/hyakume/">
-<meta property="og:image" content="https://jonescoartdept.com/images/hyakume-preview.png?v=2">
+<meta property="og:image" content="https://jonescoartdept.com/images/hyakume-preview.png?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Jonesco Art Department logo beside the title 百目 Hyakume, 42 eyes, wandering">
+<meta property="og:image:alt" content="Jonesco Art Department logo beside the title 百目 Hyakume, 100 eyes, wandering">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -111,7 +111,7 @@ canvas { display: block; position: absolute; }
 <header class="cap">
   <h1><span>百目</span><span class="latin">Hyakume</span></h1>
   <div class="right">
-    <p class="meta"><b id="count">0</b> eyes · <span id="mode">wandering</span></p>
+    <p class="meta"><b id="count">100</b> eyes · <span id="mode">wandering</span></p>
     <div class="switch" role="group" aria-label="Print style">
       <button type="button" id="btn-original" data-view="original" aria-pressed="true">Original</button>
       <button type="button" id="btn-pixel" data-view="pixel" aria-pressed="false">Pixel</button>
@@ -1171,10 +1171,13 @@ canvas { display: block; position: absolute; }
           }
           const { fx, fy } = place(e);
           const cx = (fx + 0.5) * R, cy = (fy + 0.5) * R, r = e.r;
-          // the pupil: tight crosshatch fixed to the page, seen through a moving circle
+          // the pupil: inked the same way as the darkest parts of the drawing (every hatch layer,
+          // then the fill, all multiplied), so it is exactly as dark
           ctx.save();
           ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
-          for (const [deg, i] of [[45, 1], [-45, 2], [0, 3], [90, 4]]) strokes(ctx, deg, 2.6, 1.2, i + 10, cx - r, cy - r, 2 * r, 2 * r);
+          ctx.globalCompositeOperation = "multiply";
+          LAYERS.forEach(([deg, , gap, width], i) => strokes(ctx, deg, gap, width, i + 1, cx - r, cy - r, 2 * r, 2 * r));
+          ctx.globalAlpha = 0.94; ctx.fillStyle = INK; ctx.fillRect(cx - r, cy - r, 2 * r, 2 * r);
           ctx.restore();
           ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.lineWidth = Math.max(1.4, r * 0.12); ctx.strokeStyle = INK; ctx.stroke();
           ctx.fillStyle = PAPER;
@@ -1814,7 +1817,6 @@ canvas { display: block; position: absolute; }
     for (const btn of document.querySelectorAll(".switch button")) btn.setAttribute("aria-pressed", String(btn.dataset.view === name));
     hint.textContent = HINTS[name];
     pick.value = name;
-    document.getElementById("count").textContent = views[name].eyes.length;
     fit();
   };
   for (const btn of document.querySelectorAll(".switch button")) {
