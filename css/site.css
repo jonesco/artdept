@@ -105,7 +105,7 @@ h2 { font-weight: 800; font-size: clamp(30px, 4vw, 48px); line-height: 1; text-t
 /* About + footer read as one black block */
 .about { background: var(--ink); color: var(--paper); border-bottom: 1px solid #333; }
 .about img { filter: invert(1); }
-.about a { text-decoration: none; border-bottom: 3px solid var(--yellow); }
+.about a { text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 .about a:hover { color: var(--yellow); }
 .about .wrap { display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
 .about p { font-size: 19px; max-width: 34em; margin: 0 0 12px; }
