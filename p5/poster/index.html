@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <title>Poster · Jonesco.design</title>
+  <meta name="description" content="The Jonesco type, grid and color on one interactive poster. Hover for the values.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://design.jonesco.com/v/3.5.0/system.css">
+  <link rel="stylesheet" href="https://design.jonesco.com/v/3.5.0/patterns.css">
+  <style>
+    /* Poster page only. Everything visual comes from the system's tokens. */
+    body { padding-bottom: 72px; }          /* room for the readout bar */
+    .p-head { background: var(--ink); color: var(--paper); }
+    .p-head .sys-wrap { display: flex; align-items: center; justify-content: space-between; height: var(--hdr-sm); }
+    .p-head a { text-decoration: none; transition: color var(--quick); }
+    .p-head a:hover { color: var(--highlight); }
+    .p-head nav { display: flex; gap: 28px; }
+
+    .p-hero { background: var(--ink); color: var(--paper); padding: 40px 0 56px; border-bottom: 1px solid var(--line-dark); }
+    .p-kicker { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; color: var(--highlight); }
+    #fit { display: inline-block; white-space: nowrap; line-height: .86; margin: 0; }
+    .p-hero-sub { margin: 24px 0 0; max-width: 34em; font-size: var(--size-body); color: #d4d4d4; }
+
+    .p-section { padding: var(--space-section) 0; }
+    .p-section + .p-section { border-top: var(--rule); }
+    .p-section h2 { margin: 0 0 var(--space-head); font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: var(--track-display); font-size: var(--size-section); line-height: .95; }
+    .p-section h2 small { font: 700 var(--size-label)/1 var(--font-label); letter-spacing: var(--track-label); margin-left: 14px; color: var(--muted); vertical-align: middle; }
+
+    /* hover targets */
+    [data-spec] { transition: color var(--quick), background-color var(--quick); cursor: crosshair; }
+
+    /* Type */
+    .p-try { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .p-try input { flex: 1; min-width: 200px; max-width: 520px; height: 48px; padding: 0 14px; border: var(--thin); border-radius: 0; background: var(--paper); color: var(--ink); font: 400 var(--size-body) var(--font-body); }
+    .p-try input:focus-visible, .p-chip:focus-visible, .p-col:focus-visible, .p-sw:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .p-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; align-items: center; padding: 22px 0; border-top: var(--thin); }
+    .p-row:first-of-type { border-top: var(--rule); }
+    .p-row > .sys-label { color: var(--muted); }
+    .p-row .tok { display: block; margin-top: 6px; font: 400 12px/1.3 var(--font-mono); letter-spacing: 0; text-transform: none; }
+    .p-row [data-spec]:hover { color: var(--accent); }
+    .p-hero-s { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: var(--track-display); font-size: var(--size-h1); line-height: .95; overflow-wrap: anywhere; }
+    .p-title-s { font-family: var(--font-label); font-weight: 700; letter-spacing: 0; font-size: var(--size-h2); line-height: 1.15; overflow-wrap: anywhere; }
+    .p-label-s { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: var(--track-label); font-size: var(--size-label); }
+    .p-body-s { font-size: var(--size-body); max-width: 36em; margin: 0; }
+
+    /* Grid */
+    .p-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .p-chip { height: 40px; padding: 0 14px; border: var(--thin); border-radius: 0; background: var(--paper); color: var(--ink); cursor: pointer; font: 700 var(--size-tag)/1 var(--font-label); letter-spacing: var(--track-label); text-transform: uppercase; transition: background-color var(--quick), color var(--quick); }
+    .p-chip:hover { color: var(--accent); }
+    .p-chip[aria-pressed="true"] { background: var(--ink); color: var(--highlight); border-color: var(--ink); }
+    .p-cols, .p-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gutter); }
+    .p-col { height: 120px; display: flex; align-items: flex-end; padding: 8px; border: 0; border-radius: 0; background: var(--gray); color: var(--muted); font: 400 12px/1 var(--font-mono); cursor: crosshair; transition: background-color var(--quick), color var(--quick); }
+    .p-col:hover, .p-col.on { background: var(--ink); color: var(--highlight); }
+    .p-layout { margin-top: var(--gutter); }
+    .p-block { min-height: 96px; padding: 12px 14px; background: var(--newsprint); border-top: var(--rule); font: 700 var(--size-label)/1.2 var(--font-label); letter-spacing: var(--track-label); text-transform: uppercase; transition: background-color var(--quick); }
+    .p-block:hover { background: var(--ink); color: var(--highlight); }
+
+    /* Color */
+    .p-sws { display: flex; height: 280px; gap: 0; border: var(--thin); }
+    .p-sw { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; border: 0; border-radius: 0; cursor: pointer; text-align: left; transition: flex-grow .25s ease; font: 700 var(--size-label)/1.2 var(--font-label); letter-spacing: var(--track-label); text-transform: uppercase; overflow: hidden; }
+    .p-sw:hover, .p-sw:focus-visible { flex-grow: 2.6; }
+    .p-sw code { display: block; font: 400 12px/1.4 var(--font-mono); letter-spacing: 0; text-transform: none; margin-top: 4px; white-space: nowrap; }
+    .p-sw.dark { color: var(--paper); }
+    .p-sw.light { color: var(--ink); }
+    .p-note { margin: 16px 0 0; color: var(--muted); max-width: 40em; }
+
+    /* Rules and space */
+    .p-rule { margin: 0 0 28px; }
+    .p-rule i { display: block; background: var(--ink); margin-bottom: 10px; }
+    .p-rule b { font: 700 var(--size-label)/1 var(--font-label); letter-spacing: var(--track-label); text-transform: uppercase; }
+    .p-space { margin-top: 36px; border: var(--thin); padding: 0; background: var(--paper); }
+    .p-space .bar { display: flex; align-items: center; padding: 0 14px; font: 400 12px/1 var(--font-mono); color: var(--paper); background: var(--accent); }
+    .p-space .bar.a { height: var(--space-section); }
+    .p-space .bar.b { height: var(--space-head); }
+    .p-space .head { padding: 14px; border-top: var(--rule); font: 700 var(--size-h2)/1 var(--font-display); text-transform: uppercase; letter-spacing: var(--track-display); }
+    .p-space .body { padding: 14px; background: var(--newsprint); }
+    .p-space [data-spec]:hover { background-color: var(--ink); }
+
+    .p-end { background: var(--ink); color: var(--paper); padding: 56px 0; }
+    .p-end a { color: var(--paper); text-decoration: none; transition: color var(--quick); }
+    .p-end a:hover { color: var(--highlight); }
+    .p-end .big { display: block; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: var(--track-display); font-size: var(--size-h1); line-height: .95; }
+
+    /* Readout bar */
+    #readout { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--ink); color: var(--paper); border-top: 1px solid var(--line-dark); }
+    #readout .sys-wrap { display: flex; gap: 20px; align-items: center; min-height: 56px; padding-top: 8px; padding-bottom: 8px; font: 400 13px/1.45 var(--font-mono); }
+    #readout .k { flex: none; color: var(--highlight); font: 700 var(--size-tag)/1 var(--font-label); letter-spacing: var(--track-label); text-transform: uppercase; min-width: 9em; }
+    #readout .v { min-width: 0; }
+    #readout .hint { margin-left: auto; color: #9ca3af; white-space: nowrap; }
+
+    /* Grid overlay (key G) */
+    #overlay { position: fixed; inset: 0; z-index: 20; pointer-events: none; display: none; }
+    #overlay.on { display: block; }
+    #overlay .sys-wrap { height: 100%; display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gutter); }
+    #overlay i { background: rgba(228, 20, 140, .12); border-left: 1px solid rgba(228, 20, 140, .5); border-right: 1px solid rgba(228, 20, 140, .5); }
+
+    @media (max-width: 720px) {
+      .sys-wrap { padding: 0 var(--gutter-sm); }
+      .p-cols, .p-layout, #overlay .sys-wrap { gap: var(--gutter-sm); }
+      .p-col span { display: none; }
+      .p-row { grid-template-columns: 1fr; gap: 10px; }
+      .p-sws { flex-direction: column; height: auto; }
+      .p-sw { min-height: 64px; flex: none; justify-content: center; }
+      .p-sw:hover, .p-sw:focus-visible { flex-grow: 0; }
+      #readout .hint { display: none; }
+      #readout .k { min-width: 0; }
+      .p-head nav { gap: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+
+<header class="p-head">
+  <div class="sys-wrap">
+    <a href="https://design.jonesco.com/" class="sys-label" style="color:var(--paper)">Jonesco.design</a>
+    <nav class="sys-label">
+      <a href="https://design.jonesco.com/foundations/type.html">Type</a>
+      <a href="https://design.jonesco.com/foundations/layout.html">Layout</a>
+      <a href="https://design.jonesco.com/foundations/color.html">Color</a>
+    </nav>
+  </div>
+</header>
+
+<section class="p-hero">
+  <div class="sys-wrap">
+    <div class="p-kicker sys-label"><span>The Jonesco system</span><span id="ver">Poster</span></div>
+    <h1 id="fit" class="sys-display" data-spec="hero">Jonesco</h1>
+    <p class="p-hero-sub">One typeface. Black, white and newsprint. Thick rules for structure, thin ones for lists. Hover anything for its value; press <b>G</b> to see the grid.</p>
+  </div>
+</section>
+
+<section class="p-section">
+  <div class="sys-wrap">
+    <h2>Type <small>Trade Gothic only</small></h2>
+    <label class="p-try"><span class="sys-label">Try your words</span>
+      <input id="try" type="text" value="Plain type, thick rules" maxlength="40" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="p-row">
+      <div class="sys-label">Hero<span class="tok">Bold Cond No. 20</span></div>
+      <div class="p-hero-s" data-spec="hero" id="s-hero">Plain type, thick rules</div>
+    </div>
+    <div class="p-row">
+      <div class="sys-label">Title<span class="tok">Bold No. 2</span></div>
+      <div class="p-title-s" data-spec="title" id="s-title">Plain type, thick rules</div>
+    </div>
+    <div class="p-row">
+      <div class="sys-label">Label<span class="tok">Bold No. 2, caps</span></div>
+      <div class="p-label-s" data-spec="label" id="s-label">Plain type, thick rules</div>
+    </div>
+    <div class="p-row">
+      <div class="sys-label">Body<span class="tok">Regular, oblique, bold</span></div>
+      <p class="p-body-s" data-spec="body">Body is Trade Gothic, <em>with its oblique</em> and <b>its bold</b>. Plain, readable, sentence case, with curly quotes and American spelling.</p>
+    </div>
+  </div>
+</section>
+
+<section class="p-section">
+  <div class="sys-wrap">
+    <h2>Grid <small>One centered column</small></h2>
+    <div class="p-chips" role="group" aria-label="Sample layout">
+      <button class="p-chip" data-lay="12" aria-pressed="false">Full</button>
+      <button class="p-chip" data-lay="8,4" aria-pressed="false">8 + 4</button>
+      <button class="p-chip" data-lay="4,4,4" aria-pressed="true">4 + 4 + 4</button>
+      <button class="p-chip" data-lay="3,3,3,3" aria-pressed="false">3 × 4</button>
+      <button class="p-chip" data-lay="6,3,3" aria-pressed="false">6 + 3 + 3</button>
+    </div>
+    <div class="p-cols" id="cols" aria-label="Twelve columns"></div>
+    <div class="p-layout" id="layout"></div>
+    <p class="p-note">Twelve columns in a <b>1200px</b> wrap, with <b>24px</b> gutters (16px on phones). Everything lines up on the column’s edges, including full-width bands.</p>
+  </div>
+</section>
+
+<section class="p-section">
+  <div class="sys-wrap">
+    <h2>Color <small>Click to copy</small></h2>
+    <div class="p-sws" id="sws"></div>
+    <p class="p-note">Magenta marks hover and the one thing that’s active. Yellow is the highlight. Cyan is only for data.</p>
+  </div>
+</section>
+
+<section class="p-section">
+  <div class="sys-wrap">
+    <h2>Rules and space</h2>
+    <div class="p-rule" data-spec="rule-thick"><i style="height:var(--rule-w)"></i><b>Thick, 4px: section titles and tile titles</b></div>
+    <div class="p-rule" data-spec="rule-thin"><i style="height:var(--thin-w)"></i><b>Thin, 2px: list rows</b></div>
+    <div class="p-space">
+      <div class="bar a" data-spec="space-section">56px from the rule</div>
+      <div class="head" data-spec="hero">Section heading</div>
+      <div class="bar b" data-spec="space-head">32px to the content</div>
+      <div class="body">Content starts here. Headings get the same space above and below everywhere.</div>
+    </div>
+  </div>
+</section>
+
+<section class="p-end">
+  <div class="sys-wrap">
+    <a class="big" href="https://design.jonesco.com/">Jonesco.design</a>
+  </div>
+</section>
+
+<div id="overlay" aria-hidden="true"><div class="sys-wrap"></div></div>
+<div id="readout" role="status" aria-live="polite">
+  <div class="sys-wrap"><span class="k" id="rk">Hover anything</span><span class="v" id="rv">The values come from the live page.</span><span class="hint">G: grid</span></div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var root = getComputedStyle(document.documentElement);
+  var tok = function (n) { return root.getPropertyValue(n).trim(); };
+
+  /* Fit the hero word to the column's width. */
+  var fit = $('fit');
+  function fitHero() {
+    var w = fit.parentNode.clientWidth - parseFloat(getComputedStyle(fit.parentNode).paddingLeft) * 2;
+    fit.style.fontSize = '100px';
+    fit.style.fontSize = (100 * w / fit.getBoundingClientRect().width) + 'px';
+  }
+  var fitFont = document.fonts && document.fonts.load ? document.fonts.load('700 100px "Trade Gothic Bold Cond 20"', 'JONESCO') : Promise.resolve();
+  fitFont.then(fitHero, fitHero);
+  addEventListener('load', fitHero);
+  addEventListener('resize', fitHero);
+
+  /* Readout bar */
+  var rk = $('rk'), rv = $('rv');
+  function show(k, v) { rk.textContent = k; rv.textContent = v; }
+  function px(v) { return Math.round(parseFloat(v) * 10) / 10 + 'px'; }
+  function typeInfo(el, name, token, trackTok) {
+    var cs = getComputedStyle(el), fam = cs.fontFamily.split(',')[0].replace(/["']/g, '');
+    show(name, fam + ' · ' + px(cs.fontSize) + ' · ' + (trackTok || 'tracking 0') + ' · line ' + (cs.lineHeight === 'normal' ? 'normal' : px(cs.lineHeight)) + ' · ' + token);
+  }
+  var specs = {
+    hero:  function (el) { typeInfo(el, 'Hero', '--size-h1', '--track-display ' + tok('--track-display')); },
+    title: function (el) { typeInfo(el, 'Title', '--size-h2'); },
+    label: function (el) { typeInfo(el, 'Label', '--size-label', '--track-label ' + tok('--track-label')); },
+    body:  function (el) { typeInfo(el, 'Body', '--size-body'); },
+    'rule-thick': function () { show('Thick rule', '--rule-w ' + tok('--rule-w') + ' · section titles, tile titles'); },
+    'rule-thin':  function () { show('Thin rule', '--thin-w ' + tok('--thin-w') + ' · list rows'); },
+    'space-section': function () { show('Space', '--space-section ' + tok('--space-section') + ' · rule to section heading'); },
+    'space-head':    function () { show('Space', '--space-head ' + tok('--space-head') + ' · section heading to content'); }
+  };
+  document.querySelectorAll('[data-spec]').forEach(function (el) {
+    var f = specs[el.dataset.spec];
+    if (!f) return;
+    var run = function () { f(el); };
+    el.addEventListener('mouseenter', run); el.addEventListener('focus', run); el.addEventListener('click', run);
+  });
+
+  /* Your words drive the type specimens */
+  var inp = $('try');
+  function sync() {
+    var t = inp.value.trim() || 'Plain type, thick rules';
+    $('s-hero').textContent = t; $('s-title').textContent = t; $('s-label').textContent = t;
+  }
+  inp.addEventListener('input', sync);
+
+  /* Grid */
+  var cols = $('cols'), layout = $('layout'), ov = $('overlay').firstElementChild;
+  for (var i = 1; i <= 12; i++) {
+    var b = document.createElement('button'); b.className = 'p-col'; b.type = 'button'; b.innerHTML = '<span>' + i + '</span>'; b.dataset.n = i; b.setAttribute('aria-label', 'Column ' + i);
+    var cb = function (e) { var el = e.currentTarget, w = el.getBoundingClientRect().width; show('Column ' + el.dataset.n + ' of 12', Math.round(w * 10) / 10 + 'px wide now · gutter ' + px(getComputedStyle(cols).columnGap)); };
+    b.addEventListener('mouseenter', cb); b.addEventListener('focus', cb); b.addEventListener('click', cb);
+    cols.appendChild(b); ov.appendChild(document.createElement('i'));
+  }
+  var names = ['Navigation', 'Feature', 'Aside', 'Tile', 'Copy', 'Image'];
+  function setLayout(spec) {
+    layout.innerHTML = '';
+    spec.split(',').forEach(function (n, i) {
+      var d = document.createElement('div'); d.className = 'p-block'; d.style.gridColumn = 'span ' + n; d.textContent = names[i % names.length] + ' · ' + n;
+      d.addEventListener('mouseenter', function () { show('Span ' + n + ' of 12', Math.round(d.getBoundingClientRect().width * 10) / 10 + 'px wide now · thick rule on top, square corners'); });
+      layout.appendChild(d);
+    });
+    document.querySelectorAll('[data-lay]').forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.lay === spec); });
+  }
+  document.querySelectorAll('[data-lay]').forEach(function (c) { c.addEventListener('click', function () { setLayout(c.dataset.lay); }); });
+  setLayout('4,4,4');
+
+  /* Color */
+  var sws = $('sws');
+  [['Ink', '--ink', 'dark', 'Text, rules, header, footer'], ['Paper', '--paper', 'light', 'Page background'], ['Newsprint', '--newsprint', 'light', 'Behind artwork'],
+   ['Accent', '--accent', 'dark', 'Hover, the one active thing'], ['Highlight', '--highlight', 'light', 'Tags, hover on black'], ['Muted', '--muted', 'dark', 'Secondary text'], ['Data', '--data', 'light', 'Charts only']
+  ].forEach(function (c) {
+    var hex = tok(c[1]), b = document.createElement('button');
+    b.type = 'button'; b.className = 'p-sw ' + c[2]; b.style.background = 'var(' + c[1] + ')';
+    if (c[1] === '--paper') b.style.borderRight = '2px solid var(--ink)';
+    b.innerHTML = c[0] + '<code>' + c[1] + ' ' + hex + '</code>';
+    var info = function () { show(c[0], c[1] + ' ' + hex + ' · ' + c[3]); };
+    b.addEventListener('mouseenter', info); b.addEventListener('focus', info);
+    b.addEventListener('click', function () {
+      info();
+      if (navigator.clipboard) navigator.clipboard.writeText(hex).then(function () { show(c[0], hex + ' copied'); }, function () {});
+    });
+    sws.appendChild(b);
+  });
+
+  /* Grid overlay on G */
+  addEventListener('keydown', function (e) {
+    if (e.key.toLowerCase() === 'g' && !e.metaKey && !e.ctrlKey && !e.altKey && document.activeElement !== inp) $('overlay').classList.toggle('on');
+  });
+})();
+</script>
+</body>
+</html>

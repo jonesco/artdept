@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>P5 experiments | Jonesco Art Dept.</title>
+  <meta name="description" content="Small experiments made with p5.js by Jonesco Art Dept.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jonescoartdept.com/p5/">
+  <meta property="og:site_name" content="Jonesco Art Dept.">
+  <meta property="og:title" content="P5 experiments | Jonesco Art Dept.">
+  <meta property="og:description" content="Small experiments made with p5.js by Jonesco Art Dept.">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="https://design.jonesco.com/v/1.3.0/system.css">
+  <link rel="stylesheet" href="../css/site.css?v=6">
+  <style>
+    .shop-head .wrap { padding-top: 56px; padding-bottom: 8px; }
+    .shop-head h1 { font-size: clamp(40px, 5.6vw, 76px); line-height: .95; max-width: 15em; margin: 0; }
+    .shop-head p { font-size: 19px; max-width: 34em; margin: 16px 0 0; }
+    .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; padding: 40px 0 64px; }
+    .tile { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
+    .tile-art { position: relative; aspect-ratio: 1 / 1; background: var(--ink); border: var(--rule); overflow: hidden; }
+    .tile-art img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+    a.tile:hover .tile-art img { transform: scale(1.04); }
+    .tile-info { padding: 16px 0 12px; border-bottom: var(--rule); }
+    .tile-info h2 { font-size: 26px; line-height: 1.1; margin: 0; }
+    .tile-sub { display: flex; justify-content: space-between; gap: 16px; padding-top: 10px; font-size: 15px; }
+    .tile-sub b { font-weight: 600; text-transform: uppercase; font-size: 13px; padding-top: 2px; white-space: nowrap; }
+    a.tile:hover .tile-sub b { color: var(--magenta); }
+    @media (max-width: 860px) {
+      .shop-head .wrap { padding-top: 36px; }
+      .tiles { grid-template-columns: 1fr; gap: 32px; padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="../" aria-label="Jonesco Art Dept. shop">
+        <img src="../jad-logo.png" alt="">
+        <span>Jonesco Art Dept.</span>
+      </a>
+      <nav>
+        <a href="../yokai/">Yōkai</a>
+        <a href="./">P5</a>
+        <a href="../">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="shop-head">
+      <div class="wrap">
+        <h1>Little experiments, made with code.</h1>
+        <p>Small things built with p5.js. Open one, poke at it, and see what it does.</p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="tiles">
+        <a class="tile" href="coloring/">
+          <div class="tile-art"><img src="images/coloring.jpg" width="800" height="800" alt="A black-and-white mandala coloring page"></div>
+          <div class="tile-info"><h2>Free coloring page</h2></div>
+          <div class="tile-sub"><span>A new mandala, pattern or maze every time. Print it.</span><b>Open →</b></div>
+        </a>
+
+        <a class="tile" href="logo/">
+          <div class="tile-art"><img src="images/logo.jpg" width="800" height="800" alt="ART DEPT. in white condensed type on black"></div>
+          <div class="tile-info"><h2>Living logo</h2></div>
+          <div class="tile-sub"><span>The letters fly in and settle. Move the cursor to push them.</span><b>Open →</b></div>
+        </a>
+
+        <a class="tile" href="poster/">
+          <div class="tile-art"><img src="images/poster.jpg" width="800" height="800" alt="JONESCO in large white condensed type on black"></div>
+          <div class="tile-info"><h2>Design system poster</h2></div>
+          <div class="tile-sub"><span>Our type, grid and color on one page. Hover for the values.</span><b>Open →</b></div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="../yokai/">Yōkai Coloring Book</a>
+        <a href="coloring/">Free coloring page</a>
+        <a href="https://jonesco.com" target="_blank" rel="noopener">Jonesco.com</a>
+      </div>
+      <small>© <span id="yr">2026</span> Jonesco Art Dept.</small>
+    </div>
+  </footer>
+
+  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

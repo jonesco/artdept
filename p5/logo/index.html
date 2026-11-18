@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<title>Jonesco Art Dept.</title>
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/p5@2.3.1/lib/p5.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  canvas { display: block; touch-action: none; }
+  .hint { position: fixed; left: 0; right: 0; bottom: 20px; text-align: center; font: 400 13px "Libre Franklin", system-ui, sans-serif; color: #9ca3af; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="hint" id="hint">Move the cursor. Click to replay.</div>
+<script>
+// Letter outlines from Trade Gothic Bold Condensed No. 20, in font units (1000 per em, y up).
+const LOGO = {"glyphs":[{"ch":"A","d":"M172 268H272L223 578H221ZM132 0H12L145 722H299L432 0H312L290 160H154Z","x":0,"y":0,"adv":444},{"ch":"R","d":"M184 398H228Q253 398 270.5 403.0Q288 408 299.0 421.0Q310 434 315.0 455.5Q320 477 320 509Q320 573 299.0 596.5Q278 620 228 620H184ZM184 0H60V722H234Q338 722 391.0 673.0Q444 624 444 509Q444 465 436.5 434.0Q429 403 416.5 381.5Q404 360 388.5 347.0Q373 334 357 327L462 0H336L248 299Q236 297 218.5 296.5Q201 296 184 296Z","x":444,"y":0,"adv":500},{"ch":"T","d":"M132 614H12V722H376V614H256V0H132Z","x":944,"y":0,"adv":389},{"ch":"D","d":"M184 102H227Q277 102 296.5 124.0Q316 146 316 203V519Q316 576 296.5 598.0Q277 620 227 620H184ZM60 722H244Q341 722 390.5 669.0Q440 616 440 504V218Q440 106 390.5 53.0Q341 0 244 0H60Z","x":0,"y":860,"adv":500},{"ch":"E","d":"M60 0V722H392V614H184V428H344V320H184V108H406V0Z","x":500,"y":860,"adv":444},{"ch":"P","d":"M184 398H232Q262 398 282.5 403.0Q303 408 315.5 421.0Q328 434 333.0 455.5Q338 477 338 509Q338 541 333.0 562.5Q328 584 315.5 596.5Q303 609 282.5 614.5Q262 620 232 620H184ZM60 0V722H238Q353 722 407.5 673.0Q462 624 462 509Q462 451 448.5 410.5Q435 370 407.5 344.5Q380 319 337.5 307.5Q295 296 238 296H184V0Z","x":944,"y":860,"adv":500},{"ch":"T","d":"M132 614H12V722H376V614H256V0H132Z","x":1444,"y":860,"adv":389},{"ch":".","d":"M52 0V118H170V0Z","x":1833,"y":860,"adv":222}],"w":2055,"h":1582,"cap":722};
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let letters = [], ptr = null, t0 = 0, S = 1, X0 = 0, Y0 = 0, ctx;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  ctx = drawingContext;
+  letters = LOGO.glyphs.map(g => ({ g, path: new Path2D(g.d), ox: 0, oy: 0, vx: 0, vy: 0, r: 0, vr: 0, sc: 1, a: 1, delay: 0 }));
+  layout();
+  if (REDUCED) document.getElementById('hint').hidden = true; else replay();
+  const el = document.querySelector('canvas');
+  el.setAttribute('role', 'img');
+  el.setAttribute('aria-label', 'Jonesco Art Dept.');
+  addEventListener('pointermove', e => { ptr = { x: e.clientX, y: e.clientY }; });
+  addEventListener('pointerdown', e => { ptr = { x: e.clientX, y: e.clientY }; });
+  document.addEventListener('pointerleave', () => { ptr = null; });
+  addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') ptr = null; });
+  addEventListener('click', () => { if (!REDUCED) replay(); });
+}
+function windowResized() { resizeCanvas(windowWidth, windowHeight); layout(); }
+
+function layout() {
+  const L = Math.min(width, height) * 0.74;
+  S = L / LOGO.w;
+  X0 = (width - LOGO.w * S) / 2;
+  Y0 = (height - LOGO.h * S) / 2 + LOGO.cap * S;   // baseline of line 1
+}
+// Throw every letter somewhere off the page, then let the springs settle them.
+function replay() {
+  t0 = millis();
+  letters.forEach((l, i) => {
+    const ang = random(TWO_PI), d = random(0.35, 0.8) * Math.max(width, height);
+    l.ox = Math.cos(ang) * d; l.oy = Math.sin(ang) * d;
+    l.vx = l.vy = 0; l.r = random(-1.4, 1.4); l.vr = 0; l.sc = 0.4; l.a = 0;
+    l.delay = i * 70;
+  });
+}
+
+function draw() {
+  const dt = Math.min(deltaTime / 16.667, 2), now = millis() - t0;
+  background(0);
+  ctx.fillStyle = '#fff';
+  for (const l of letters) {
+    const home = { x: X0 + (l.g.x + l.g.adv / 2) * S, y: Y0 + (l.g.y - LOGO.cap / 2) * S + LOGO.cap * 0 };
+    if (!REDUCED && now >= l.delay) {
+      // pull home
+      l.vx += -0.055 * l.ox * dt; l.vy += -0.055 * l.oy * dt; l.vr += -0.06 * l.r * dt;
+      // cursor pushes the letters away and tips them
+      if (ptr) {
+        const cx = home.x + l.ox, cy = home.y + l.oy, dx = cx - ptr.x, dy = cy - ptr.y, d = Math.hypot(dx, dy), R = Math.min(width, height) * 0.3;
+        if (d < R && d > 0.5) {
+          const f = Math.pow(1 - d / R, 2) * 3.2 * dt;
+          l.vx += dx / d * f; l.vy += dy / d * f; l.vr += dx / d * f * 0.012;
+        }
+      }
+      const k = Math.pow(0.86, dt);
+      l.vx *= k; l.vy *= k; l.vr *= k;
+      l.ox += l.vx * dt; l.oy += l.vy * dt; l.r += l.vr * dt;
+      l.sc += (1 - l.sc) * Math.min(0.12 * dt, 1); l.a += (1 - l.a) * Math.min(0.14 * dt, 1);
+    } else if (REDUCED) { l.ox = l.oy = l.r = 0; l.sc = l.a = 1; }
+    ctx.save();
+    ctx.globalAlpha = l.a;
+    ctx.translate(home.x + l.ox, home.y + l.oy);
+    ctx.rotate(l.r);
+    ctx.scale(S * l.sc, S * l.sc);
+    ctx.translate(-l.g.adv / 2, LOGO.cap / 2);
+    ctx.scale(1, -1);
+    ctx.fill(l.path);
+    ctx.restore();
+  }
+}
+</script>
+</body>
+</html>
